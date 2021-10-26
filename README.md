@@ -2,7 +2,7 @@
 
 ## mparticle-workflows
 
-Hello! This is a public repository for mParticle's reusable GitHub workflows that we share across our SDKs and Kits.
+Hello! This is a public repository for mParticle's reusable GitHub workflows that we share across our SDKs and Kits for our CI builds.
 
 More info on GitHub reusable workflows: https://github.blog/changelog/2021-10-05-github-actions-dry-your-github-actions-configuration-by-reusing-workflows/
 
