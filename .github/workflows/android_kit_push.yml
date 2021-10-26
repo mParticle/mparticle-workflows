@@ -1,7 +1,6 @@
 name: Push
 on:
   workflow_call:
-  push:
 
 jobs:
   unit-tests:

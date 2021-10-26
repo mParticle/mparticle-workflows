@@ -1,7 +1,6 @@
 name: "Dependabot Automerge"
 on: 
   workflow_call:
-  pull_request_target:
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
