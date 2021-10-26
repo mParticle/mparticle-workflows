@@ -10,10 +10,11 @@ More info on GitHub reusable workflows: https://github.blog/changelog/2021-10-05
 
 In a child repository, you can reference the shared reusable workflow like this:
 
+```yaml
 job-name:
     name: "Check PR for correct target branch"
     uses: mParticle/mparticle-workflows/.github/workflows/pr-branch-target-gitflow.yml@stable
-    
+```
     
 #### 1) Please bump up the stable git tag when appropiate.  We use alpha/beta tags for testing. 
 #### 2) New yml/yaml workflow files need to be created in .github/workflows folder in order to function. 
