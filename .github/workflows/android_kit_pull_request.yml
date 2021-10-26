@@ -2,6 +2,9 @@ name: "Dependabot Automerge"
 on: 
   workflow_call:
 jobs:
+  pr-branch-target-continuous:
+    name: "Check PR for semantic target branch"
+    uses: mParticle/mparticle-workflows/.github/workflows/pr-branch-target-continuous.yml@stable
   unit-tests:
     runs-on: ubuntu-latest
     name: "Unit Tests"

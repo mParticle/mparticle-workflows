@@ -1,15 +1,15 @@
-name: Semantic PR Check
+name: "Semantic PR Check"
 on:
     workflow_call:
     pull_request:
         types: [opened, synchronize, edited]
 jobs:
     pr-title-check:
-        name: Check PR for semantic title
+        name: "Check PR for semantic title"
         if: ${{ github.actor != 'dependabot[bot]' }}
         runs-on: ubuntu-18.04
         steps:
-            - name: Set PR title validity
+            - name: "Set PR title validity"
               id: is-semantic
               if: >
                   startsWith(github.event.pull_request.title, 'feat:')||
@@ -26,15 +26,15 @@ jobs:
               run: |
                   OUTPUT=true
                   echo "::set-output name=isSemantic::$OUTPUT"
-            - name: echo isSemantic
+            - name: "echo isSemantic"
               run: |
                   echo ${{ steps.is-semantic.outputs.isSemantic }}
-            - name: PR title is valid
+            - name: "PR title is valid"
               if: ${{steps.is-semantic.outputs.isSemantic == 'true'}}
               run: |
                   echo 'Pull request title is valid.'
                   echo ${{ steps.is-semantic.outputs.isSemantic }}
-            - name: PR title is invalid
+            - name: "PR title is invalid"
               if: ${{ steps.is-semantic.outputs.isSemantic != 'true'}}
               run: |
                   echo ${{ steps.is-semantic.outputs.isSemantic }}
