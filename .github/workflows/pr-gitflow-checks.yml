@@ -2,7 +2,6 @@ name: "PR Gitflow Checks"
 
 on:
   workflow_call:
-  pull_request:
 
 jobs:
   pr-branch-check-name:
