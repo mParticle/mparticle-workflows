@@ -1,0 +1,25 @@
+name: "Semantic Release Repo & Branch Check"
+on:
+  workflow_call:
+jobs:
+  # SDK release must be done fromt he public/master branch
+  confirm-public-repo-master-branch:
+    name: Confirm release is run on public/master branch
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Repo and Branch Check
+        run: |
+          BRANCHNAME=${GITHUB_REF##*/}
+          if [ $BRANCHNAME != "master" ]
+          then
+            echo "You can only run a release from the master branch, you are trying to run it from ${BRANCHNAME}"
+            exit 1
+          fi
+          if [ ${{contains(github.event.repository.name, 'internal')}} ]
+          then
+            echo "You can only run a release from the public repository of the SDK, you are trying to run it from ${{github.event.repository.name}}"
+            exit 1
+          fi
