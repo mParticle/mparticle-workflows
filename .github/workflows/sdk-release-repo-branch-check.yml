@@ -12,10 +12,10 @@ jobs:
 
       - name: Repo and Branch Check
         run: |
-          BRANCHNAME=${GITHUB_REF##*/}
-          if [ $BRANCHNAME != "master" ]
+          BRANCHNAME = ${{GITHUB_REF##*/}}
+          if [ $BRANCHNAME != "master" && $BRANCHNAME != "main" ]
           then
-            echo "You can only run a release from the master branch, you are trying to run it from ${BRANCHNAME}"
+            echo "You can only run a release from the master or main branch, you are trying to run it from ${BRANCHNAME}"
             exit 1
           fi
           if [ ${{contains(github.event.repository.name, 'internal')}} ]
