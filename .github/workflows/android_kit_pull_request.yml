@@ -2,9 +2,33 @@ name: "Dependabot Automerge"
 on: 
   workflow_call:
 jobs:
-  pr-branch-target-continuous:
-    name: "Check PR for semantic target branch"
-    uses: mParticle/mparticle-workflows/.github/workflows/pr-branch-target-continuous.yml@stable
+  pr-branch-confirmation:
+      name: "Confirm that target branch for PR is main or master"
+      if: ${{ github.actor != 'dependabot[bot]' }}
+      runs-on: ubuntu-18.04
+      steps:
+          - name: "Set PR title validity"
+            id: is-valid
+            if: >
+                startsWith(github.event.pull_request.base.ref, 'master')||
+                startsWith(github.event.pull_request.base.ref, 'main')
+            run: |
+                OUTPUT=true
+                echo "::set-output name=isValid::$OUTPUT"
+          - name: "echo isValid"
+            run: |
+                echo ${{ steps.is-valid.outputs.isValid }}
+          - name: "PR title is valid"
+            if: ${{steps.is-valid.outputs.isValid == 'true'}}
+            run: |
+                echo 'Pull request target branch is valid.'
+                echo ${{ steps.is-valid.outputs.isValid }}
+          - name: "PR title is invalid"
+            if: ${{ steps.is-valid.outputs.isValid != 'true'}}
+            run: |
+                echo ${{ steps.is-valid.outputs.isValid }}
+                echo 'Pull request target branch is not valid.'
+                exit 1
   unit-tests:
     runs-on: ubuntu-latest
     name: "Unit Tests"
