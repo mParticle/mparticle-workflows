@@ -18,7 +18,7 @@ jobs:
             echo "You can only run a release from the master or main branch, you are trying to run it from ${BRANCHNAME}"
             exit 1
           fi
-          if [ ${{contains(github.event.repository.name, 'internal')}} ]
+          if (( ${{github.event.repository.name}} == "*internal*" ))
           then
             echo "You can only run a release from the public repository of the SDK, you are trying to run it from ${{github.event.repository.name}}"
             exit 1
