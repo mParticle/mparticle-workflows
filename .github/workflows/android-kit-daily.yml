@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+  # Allow to be called from a workflow child  
+  workflow_call: 
+
   # Allow workflow to be manually run from the GitHub UI
   workflow_dispatch:
 
