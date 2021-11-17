@@ -1,4 +1,4 @@
-name: Daily Android Kit Cron
+name: Daily Cron
 
 on:
   # Run daily at midnight
@@ -7,6 +7,10 @@ on:
 
   # Allow to be called from a workflow child  
   workflow_call: 
+    secrets:
+      MP_DAILY_CRON_BOT:
+        description: 'token needed for stale action'
+        required: true
 
   # Allow workflow to be manually run from the GitHub UI
   workflow_dispatch:
@@ -20,7 +24,7 @@ jobs:
         uses: phpdocker-io/github-actions-delete-abandoned-branches@v1
         id: delete
         with:
-          github_token: ${{ secrets.MP_INTEGRATIONS_SEMANTIC_RELEASE_BOT }}
+          github_token: ${{ secrets.MP_DAILY_CRON_BOT }}
           last_commit_age_days: 30
 
           # Disable dry run and actually get stuff deleted
