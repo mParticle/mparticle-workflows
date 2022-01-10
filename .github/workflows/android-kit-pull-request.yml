@@ -14,7 +14,7 @@ jobs:
             run: |
                 OUTPUT=true
                 echo "::set-output name=isValid::$OUTPUT"
-          - name: "echo isValid"
+          - name: "Echo isValid"
             run: |
                 echo ${{ steps.is-valid.outputs.isValid }}
           - name: "PR title is valid"
@@ -29,10 +29,11 @@ jobs:
                 echo 'Pull request target branch is not valid.'
                 exit 1
   unit-tests:
-    runs-on: ubuntu-latest
     name: "Unit Tests"
+    needs: pr-branch-confirmation
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: "Checkout Repository"
         uses: actions/checkout@v2
         with:
           repository: ${{github.event.pull_request.head.repo.full_name}}
@@ -42,18 +43,50 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
-      - name: Clean and Run Unit Tests
+      - name: "Clean and Run Unit Tests"
         uses: eskatos/gradle-command-action@v1
         with:
           gradle-version: 7.2
           arguments: clean assemble test
+      - name: "Archive Test Results"
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: "unit-tests-results"
+          path: ./**/build/reports/**
+  lint:
+    name: "Lint Check"
+    needs: pr-branch-confirmation
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{github.head_ref}}
+      - name: "Install JDK 11"
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: "Run Lint"
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: 7.2
+          arguments: lint
+      - name: "Archive Lint Results"
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: "lint-results"
+          path: ./**/build/reports/**
   automerge:
     name: "Automerge Dependabot PR"
-    needs: [unit-tests]
+    needs: [unit-tests, lint]
     if: ${{github.actor == 'dependabot[bot]' && github.event_name == 'pull_request_target'}}
     runs-on: ubuntu-latest
     steps:
-      - name: Rebase Dependabot PR
+      - name: "Rebase Dependabot PR"
         uses: actions/github-script@v3
         with:
           script: |
