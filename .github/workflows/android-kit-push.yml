@@ -3,9 +3,10 @@ on:
   workflow_call:
 
 jobs:
-  unit-tests:
+  unit-tests-maven:
     runs-on: ubuntu-latest
-    name: "Unit Tests"
+    continue-on-error: true
+    name: "Unit Tests Maven"
     steps:
       - uses: actions/checkout@v2
       - name: "Install JDK 11"
@@ -18,3 +19,129 @@ jobs:
         with:
           gradle-version: 7.2
           arguments: clean assemble test
+  unit-tests-development:
+    name: "Unit Tests Development"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          path: kit
+          ref: ${{github.head_ref}}
+      - name: "Checkout Core"
+        uses: actions/checkout@v2
+        with:
+          repository: mParticle/android-sdk
+          fetch-depth: 0
+          path: core
+          ref: development
+      - name: "Install JDK 11"
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: "Build Core"
+        working-directory: core
+        run: ./gradlew publishLocal
+      - name: "Get Build Version"
+        id: core-version
+        run: |
+          ANDROID_CORE_DIR=`find  ~/.m2 -type d -name android-core`;
+          echo "android-core m2 directory:"
+          echo $ANDROID_CORE_DIR;
+          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name *-SNAPSHOT`;
+          echo "android-core m2 version directory:"
+          echo $VERSION_DIR;
+          VERSION=`basename $VERSION_DIR`;
+          echo "android-core m2 version:";
+          echo $VERSION;
+          echo "::set-output name=coreVersion::$VERSION"
+      - name: "Clean and Run Unit Tests"
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: 7.2
+          build-root-directory: kit
+          arguments: clean assemble test -Pversion=${{ steps.core-version.outputs.coreVersion }}
+      - name: "Archive Test Results"
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: "unit-tests-results"
+          path: ./**/build/reports/**
+  lint-maven:
+    name: "Lint Check Maven"
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{github.head_ref}}
+      - name: "Install JDK 11"
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: "Run Lint"
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: 7.2
+          arguments: lint
+      - name: "Archive Lint Results"
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: "lint-results"
+          path: ./**/build/reports/**
+  lint-development:
+    name: "Lint Development"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          path: kit
+          ref: ${{github.head_ref}}
+      - name: "Checkout Core"
+        uses: actions/checkout@v2
+        with:
+          repository: mParticle/android-sdk
+          fetch-depth: 0
+          path: core
+          ref: development
+      - name: "Install JDK 11"
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: "Build Core"
+        working-directory: core
+        run: ./gradlew publishLocal
+      - name: "Get Build Version"
+        id: core-version
+        run: |
+          ANDROID_CORE_DIR=`find  ~/.m2 -type d -name android-core`;
+          echo "android-core m2 directory:"
+          echo $ANDROID_CORE_DIR;
+          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name *-SNAPSHOT`;
+          echo "android-core m2 version directory:"
+          echo $VERSION_DIR;
+          VERSION=`basename $VERSION_DIR`;
+          echo "android-core m2 version:";
+          echo $VERSION;
+          echo "::set-output name=coreVersion::$VERSION"
+      - name: "Clean and Run Unit Tests"
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: 7.2
+          build-root-directory: kit
+          arguments: lint -Pversion=${{ steps.core-version.outputs.coreVersion }}
+      - name: "Archive Test Results"
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: "unit-tests-results"
+          path: ./**/build/reports/**
