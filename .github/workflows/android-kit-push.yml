@@ -4,9 +4,9 @@ on:
 
 jobs:
   unit-tests-maven:
+    name: "Unit Tests Maven"
     runs-on: ubuntu-latest
     continue-on-error: true
-    name: "Unit Tests Maven"
     steps:
       - uses: actions/checkout@v2
       - name: "Install JDK 11"
@@ -70,9 +70,9 @@ jobs:
           name: "unit-tests-results"
           path: ./**/build/reports/**
   lint-maven:
-    name: "Lint Check Maven"
-    continue-on-error: true
+    name: "Lint Checks Maven"
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v2
@@ -96,7 +96,7 @@ jobs:
           name: "lint-results"
           path: ./**/build/reports/**
   lint-development:
-    name: "Lint Development"
+    name: "Lint Checks Development"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"

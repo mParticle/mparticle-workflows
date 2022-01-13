@@ -28,8 +28,8 @@ jobs:
                 echo ${{ steps.is-valid.outputs.isValid }}
                 echo 'Pull request target branch is not valid.'
                 exit 1
-  unit-tests-development:
-    name: "Unit Tests Development"
+  unit-tests:
+    name: "Unit Tests"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
@@ -79,7 +79,7 @@ jobs:
           name: "unit-tests-results"
           path: ./**/build/reports/**
   lint:
-    name: "Unit Tests"
+    name: "Lint Checks"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
