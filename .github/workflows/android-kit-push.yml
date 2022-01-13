@@ -6,7 +6,7 @@ jobs:
   unit-tests-maven:
     name: "Unit Tests Maven"
     runs-on: ubuntu-latest
-    continue-on-error: true
+    
     steps:
       - uses: actions/checkout@v2
       - name: "Install JDK 11"
@@ -15,10 +15,17 @@ jobs:
           distribution: "zulu"
           java-version: "11"
       - name: Clean and Run Unit Tests
+        continue-on-error: true
         uses: eskatos/gradle-command-action@v1
         with:
           gradle-version: 7.2
           arguments: clean assemble test
+      - name: "Archive Test Results"
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: "unit-tests-results-maven"
+          path: ./**/build/reports/**
   unit-tests-development:
     name: "Unit Tests Development"
     runs-on: ubuntu-latest
@@ -67,12 +74,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: "unit-tests-results"
+          name: "unit-tests-results-development"
           path: ./**/build/reports/**
   lint-maven:
     name: "Lint Checks Maven"
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v2
@@ -86,6 +92,7 @@ jobs:
           java-version: "11"
       - name: "Run Lint"
         uses: eskatos/gradle-command-action@v1
+        continue-on-error: true
         with:
           gradle-version: 7.2
           arguments: lint
@@ -93,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: "lint-results"
+          name: "lint-results-maven"
           path: ./**/build/reports/**
   lint-development:
     name: "Lint Checks Development"
@@ -139,9 +146,9 @@ jobs:
           gradle-version: 7.2
           build-root-directory: kit
           arguments: lint -Pversion=${{ steps.core-version.outputs.coreVersion }}
-      - name: "Archive Test Results"
+      - name: "Archive Lint Results"
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: "unit-tests-results"
+          name: "lint-results-development"
           path: ./**/build/reports/**

@@ -116,17 +116,17 @@ jobs:
           echo "android-core m2 version:";
           echo $VERSION;
           echo "::set-output name=coreVersion::$VERSION"
-      - name: "Clean and Run Unit Tests"
+      - name: "Run Lint Checks"
         uses: eskatos/gradle-command-action@v1
         with:
           gradle-version: 7.2
           build-root-directory: kit
           arguments: lint -Pversion=${{ steps.core-version.outputs.coreVersion }}
-      - name: "Archive Test Results"
+      - name: "Archive Lint Results"
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: "unit-tests-results"
+          name: "lint-checks-results"
           path: ./**/build/reports/**
   automerge:
     name: "Automerge Dependabot PR"
