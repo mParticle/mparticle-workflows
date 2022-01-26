@@ -1,4 +1,4 @@
-name: "Dependabot Automerge"
+name: "Android Kit Pull Request Checks"
 on: 
   workflow_call:
 jobs:
@@ -35,7 +35,7 @@ jobs:
       - name: "Checkout Repository"
         uses: actions/checkout@v2
         with:
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           path: kit
           ref: ${{github.head_ref}}
       - name: "Checkout Core"
@@ -85,7 +85,7 @@ jobs:
       - name: "Checkout Repository"
         uses: actions/checkout@v2
         with:
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           path: kit
           ref: ${{github.head_ref}}
       - name: "Checkout Core"
@@ -131,7 +131,7 @@ jobs:
   automerge:
     name: "Automerge Dependabot PR"
     needs: [unit-tests, lint]
-    if: ${{github.actor == 'dependabot[bot]' && github.event_name == 'pull_request_target'}}
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request_target' }}
     runs-on: ubuntu-latest
     steps:
       - name: "Rebase Dependabot PR"
