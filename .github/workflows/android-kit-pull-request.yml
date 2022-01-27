@@ -67,7 +67,7 @@ jobs:
           echo $VERSION;
           echo "::set-output name=coreVersion::$VERSION"
       - name: "Clean and Run Unit Tests"
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
           build-root-directory: kit
@@ -117,7 +117,7 @@ jobs:
           echo $VERSION;
           echo "::set-output name=coreVersion::$VERSION"
       - name: "Run Lint Checks"
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
           build-root-directory: kit
