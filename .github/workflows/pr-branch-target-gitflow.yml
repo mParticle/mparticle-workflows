@@ -7,7 +7,10 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         runs-on: ubuntu-18.04
         steps:
-            - name: "Set PR title validity"
+            - name: "echo PR target branch"
+              run: |
+                  echo ${{ github.event.pull_request.base.ref }}
+            - name: "Set PR target branch validity"
               id: is-valid
               if: >
                   startsWith(github.event.pull_request.base.ref, 'development')||
@@ -18,12 +21,12 @@ jobs:
             - name: "echo isValid"
               run: |
                   echo ${{ steps.is-valid.outputs.isValid }}
-            - name: "PR title is valid"
+            - name: "PR target branch is valid"
               if: ${{steps.is-valid.outputs.isValid == 'true'}}
               run: |
                   echo 'Pull request target branch is valid.'
                   echo ${{ steps.is-valid.outputs.isValid }}
-            - name: "PR title is invalid"
+            - name: "PR target branch is invalid"
               if: ${{ steps.is-valid.outputs.isValid != 'true'}}
               run: |
                   echo ${{ steps.is-valid.outputs.isValid }}
