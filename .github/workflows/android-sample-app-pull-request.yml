@@ -23,6 +23,8 @@ jobs:
         uses: dorny/paths-filter@v2
         id: changes
         with:
+          base: main
+          ref: release/${{ github.run_number }}
           filters: |
             sample-app:
               - '${{ inputs.app_relative_path }}/**'
@@ -57,7 +59,7 @@ jobs:
         if: ${{ always() }}
         with:
           name: "instrumented-tests-results"
-          path: android-core/build/reports/androidTests/connected/**
+          path: ./**/build/reports/androidTests/connected/** 
       
   unit-tests:
     name: "Unit Tests"
@@ -81,9 +83,6 @@ jobs:
       - name: "Android Unit Tests Report"
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }}
-        with:
-          name: "unit-tests-results"
-          path: ./**/build/reports/**
 
   lint-checks:
     name: "Lint Checks"
