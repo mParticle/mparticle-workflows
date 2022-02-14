@@ -1,6 +1,6 @@
 name: "Android Sample App Push Checks"
 
-on: 
+on:
 
   workflow_call:
     inputs:
@@ -18,15 +18,15 @@ jobs:
       - name: "Checkout Sample Apps"
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref }}
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
           submodules: recursive
       - name: "Create Path Triggers"
         uses: dorny/paths-filter@v2
         id: changes
         with:
           base: main
-          ref: release/${{ github.run_number }}
+          ref: ${{ github.ref_name }}
           filters: |
             sample-app:
               - '${{ inputs.app_relative_path }}/**'
@@ -43,8 +43,8 @@ jobs:
       - name: "Checkout Branch"
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref }}
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
           submodules: recursive
       - name: "Install JDK 11"
         uses: actions/setup-java@v2
@@ -62,8 +62,8 @@ jobs:
         if: ${{ always() }}
         with:
           name: "instrumented-tests-results"
-          path: ./**/build/reports/androidTests/connected/** 
-      
+          path: ./**/build/reports/androidTests/connected/**
+
   unit-tests:
     name: "Unit Tests"
     timeout-minutes: 15
@@ -73,8 +73,8 @@ jobs:
       - name: "Checkout Branch"
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref}}
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
           submodules: recursive
       - name: "Install JDK 11"
         uses: actions/setup-java@v2
@@ -89,7 +89,7 @@ jobs:
         if: ${{ always() }}
         with:
           name: "unit-tests-results"
-          path: ./**/build/reports/** 
+          path: ./**/build/reports/**  
 
   lint-checks:
     name: "Lint Checks"
@@ -100,8 +100,8 @@ jobs:
       - name: "Checkout Branch"
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref }}
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
           submodules: recursive
       - name: "Install JDK 11"
         uses: actions/setup-java@v2
@@ -116,7 +116,7 @@ jobs:
         if: ${{ always() }}
         with:
           name: "lint-results"
-          path: ./**/build/reports/**   
+          path: ./**/build/reports/**
 
   kotlin-lint-checks:
     name: "Kotlin Lint Checks"
@@ -127,8 +127,8 @@ jobs:
       - name: "Checkout Branch"
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref }}
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
           submodules: recursive
       - name: "Install JDK 11"
         uses: actions/setup-java@v2
@@ -144,3 +144,4 @@ jobs:
         with:
           name: "kotlin-lint-results"
           path: ./**/build/reports/**
+
