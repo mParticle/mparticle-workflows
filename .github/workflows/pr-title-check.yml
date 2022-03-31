@@ -38,5 +38,17 @@ jobs:
               if: ${{ steps.is-semantic.outputs.isSemantic != 'true'}}
               run: |
                   echo ${{ steps.is-semantic.outputs.isSemantic }}
-                  echo 'Pull request title is not valid.'
+                  echo 'Pull request title, ${{github.event.pull_request.title}} is not valid.'
+                  echo 'title must start with one of:'
+                  echo '    build:,'
+                  echo '    chore:,'
+                  echo '    ci:,'
+                  echo '    docs:,'
+                  echo '    feat:,'
+                  echo '    fix:,'
+                  echo '    perf:,'
+                  echo '    refactor:,'
+                  echo '    revert:,'
+                  echo '    style:,'
+                  echo '    test:'
                   exit 1
