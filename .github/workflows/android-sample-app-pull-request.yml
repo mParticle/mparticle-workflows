@@ -30,9 +30,9 @@ jobs:
           filters: |
             sample-app:
               - '${{ inputs.app_relative_path }}/**'
-      - name: "Cancel workflow"
-        if: steps.changes.outputs.sample-app != 'true'
-        uses: andymckay/cancel-action@0.2
+      # - name: "Cancel workflow"
+      #   if: steps.changes.outputs.sample-app != 'true'
+      #   uses: andymckay/cancel-action@0.2
 
   instrumented-tests:
     name: "Instrumented Tests"
