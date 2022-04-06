@@ -1,0 +1,25 @@
+name: "Dependabot Branch Rebase"
+
+on: [ workflow_call ]
+
+jobs:
+  rebase-branch:
+    name: "Rebase development onto chore/dependabot Branch"
+    env:
+      GITHUB_TOKEN: ${{ secrets.MP_SEMANTIC_RELEASE_BOT }}
+      GIT_AUTHOR_NAME: mparticle-bot
+      GIT_AUTHOR_EMAIL: developers@mparticle.com
+      GIT_COMMITTER_NAME: mparticle-bot
+      GIT_COMMITTER_EMAIL: developers@mparticle.com
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout development branch"
+        uses: actions/checkout@v2
+        with:
+          ref: development
+      - name: "Rebase chore/dependabot branch"
+        run: |
+          git fetch origin chore/dependabot
+          git checkout chore/dependabot
+          git rebase development
+          git push -f origin HEAD:chore/dependabot
