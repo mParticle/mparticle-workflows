@@ -2,11 +2,24 @@ name: Fetch Data Plan
 
 on:
     workflow_call:
+      inputs:
+        app_relative_path:
+          description: 'repo path for sample app'
+          required: true
+          type: string
+        data_plan_id:
+          description: Data Plan ID
+          required: true
+          type: string
+        data_plan_version:
+          description: Data Plan Version Number
+          required: true
+          type: string
     
 jobs:
+  fetch-data-plan:
     name: "Fetch Data Plan"
     runs-on: ubuntu-latest
-    needs: confirm-public-repo-main-branch
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -26,10 +39,10 @@ jobs:
           CLIENT_ID: ${{ secrets.HIGGS_SHOP_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.HIGGS_SHOP_CLIENT_SECRET }}
         run: |
-          mp planning:data-plan-versions:fetch --dataPlanId=higgs_shop_basic_data_plan --versionNumber=1 --outFile=dataplans/higgs_shop_basic_data_plan_1.json --workspaceId=$WORKSPACE_ID --clientId=$CLIENT_ID --clientSecret=$CLIENT_SECRET
+          mp planning:data-plan-versions:fetch --dataPlanId=higgs_shop_basic_data_plan --versionNumber=${{ inputs.data_plan_version }} --outFile=dataplans/${{ inputs.data_plan_id }}_${{ inputs.data_plan_version }}.json --workspaceId=$WORKSPACE_ID --clientId=$CLIENT_ID --clientSecret=$CLIENT_SECRET
 
       - name: Archive Data Plan Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: higgs-shop-dataplan
-          path: core-sdk-samples/higgs-shop-sample-app/dataplans/
+          path: ${{ inputs.app_relative_path }}/dataplans/
