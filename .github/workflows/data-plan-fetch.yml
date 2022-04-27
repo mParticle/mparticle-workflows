@@ -45,11 +45,8 @@ jobs:
           ls -altr
 
       - name: CD into working directory
-        run: cd ${{ inputs.app_relative_path }}
-
-      - name: Check Local ENV
         run: |
-          pwd
+          cd ${{ inputs.app_relative_path }}
           ls -altr
 
       - name: Install mP CLI
@@ -61,6 +58,7 @@ jobs:
           WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        working-directory: ${{ inputs.app_relative_path }}
         run: |
           mp planning:data-plan-versions:fetch --dataPlanId=higgs_shop_basic_data_plan --versionNumber=${{ inputs.data_plan_version }} --outFile=dataplans/${{ inputs.data_plan_id }}_${{ inputs.data_plan_version }}.json --workspaceId=$WORKSPACE_ID --clientId=$CLIENT_ID --clientSecret=$CLIENT_SECRET
 
