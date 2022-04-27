@@ -41,8 +41,6 @@ jobs:
         with:
           node-version: '16.x'
           
-      - name: Change to Relative Path
-          
       - name: Check Local ENV
         run: |
           pwd
