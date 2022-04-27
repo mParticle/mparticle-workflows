@@ -15,6 +15,18 @@ on:
           description: Data Plan Version Number
           required: true
           type: string
+      secrets:
+        WORKSPACE_ID:
+          description: MP Dashboard Workspace ID
+          required: true
+        CLIENT_ID:
+          description: Client ID
+          required: true
+        CLIENT_SECRET:
+          description: Client Secret
+          required: true
+        
+          
     
 jobs:
   fetch-data-plan:
@@ -35,9 +47,9 @@ jobs:
       - name: Fetch Data Plans with mp CLI
         id: fetch-data-plans
         env:
-          WORKSPACE_ID: ${{ secrets.HIGGS_SHOP_WORKSPACE_ID }}
-          CLIENT_ID: ${{ secrets.HIGGS_SHOP_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.HIGGS_SHOP_CLIENT_SECRET }}
+          WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
           mp planning:data-plan-versions:fetch --dataPlanId=higgs_shop_basic_data_plan --versionNumber=${{ inputs.data_plan_version }} --outFile=dataplans/${{ inputs.data_plan_id }}_${{ inputs.data_plan_version }}.json --workspaceId=$WORKSPACE_ID --clientId=$CLIENT_ID --clientSecret=$CLIENT_SECRET
 
