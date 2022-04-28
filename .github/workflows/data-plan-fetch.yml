@@ -1,0 +1,59 @@
+name: Fetch Data Plan
+
+on:
+    workflow_call:
+      inputs:
+        app_relative_path:
+          description: 'repo path for sample app'
+          required: true
+          type: string
+        data_plan_id:
+          description: Data Plan ID
+          required: true
+          type: string
+        data_plan_version:
+          description: Data Plan Version Number
+          required: true
+          type: string
+      secrets:
+        WORKSPACE_ID:
+          description: MP Dashboard Workspace ID
+          required: true
+        CLIENT_ID:
+          description: Client ID
+          required: true
+        CLIENT_SECRET:
+          description: Client Secret
+          required: true
+
+jobs:
+  fetch-data-plan:
+    name: "Fetch Data Plan"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+          
+      - name: Install mP CLI
+        run: npm install -g @mparticle/cli
+
+      - name: Fetch Data Plans with mp CLI
+        id: fetch-data-plans
+        env:
+          WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        working-directory: ${{ inputs.app_relative_path }}
+        run: |
+          mp planning:data-plan-versions:fetch --dataPlanId=higgs_shop_basic_data_plan --versionNumber=${{ inputs.data_plan_version }} --outFile=dataplans/${{ inputs.data_plan_id }}_${{ inputs.data_plan_version }}.json --workspaceId=$WORKSPACE_ID --clientId=$CLIENT_ID --clientSecret=$CLIENT_SECRET
+
+      - name: Archive Data Plan Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: higgs-shop-dataplan
+          path: ${{ inputs.app_relative_path }}/dataplans/
