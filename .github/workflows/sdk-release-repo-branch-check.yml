@@ -2,9 +2,9 @@ name: "Semantic Release Repo & Branch Check"
 on:
   workflow_call:
 jobs:
-  # SDK release must be done fromt he public/master branch
+  # SDK release must be done from the public/master or public/main branch
   confirm-public-repo-master-branch:
-    name: Confirm release is run on public/master branch
+    name: Confirm release is run on public/master or public/main branch
     runs-on: ubuntu-18.04
     steps:
       - name: Git checkout
