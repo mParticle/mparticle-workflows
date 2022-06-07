@@ -2,7 +2,7 @@ name: "Semantic PR Check"
 on:
     workflow_call:
     pull_request:
-        types: [opened, synchronize, edited]
+        types: [opened, reopened, synchronize, edited]
 jobs:
     pr-title-check:
         name: "Check PR for semantic title"

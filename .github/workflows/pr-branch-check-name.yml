@@ -2,7 +2,7 @@ name: "Branch Name PR Check"
 on:
     workflow_call:
     pull_request:
-        types: [opened, synchronize, edited]
+        types: [opened, reopened, synchronize, edited]
 jobs:
     pr-branch-name-check:
         name: "Check PR for semantic branch name"
@@ -22,7 +22,8 @@ jobs:
                   startsWith(github.event.pull_request.head.ref, 'build/') ||
                   startsWith(github.event.pull_request.head.ref, 'ci/') ||
                   startsWith(github.event.pull_request.head.ref, 'chore/') ||
-                  startsWith(github.event.pull_request.head.ref, 'revert/')
+                  startsWith(github.event.pull_request.head.ref, 'revert/') ||
+                  startsWith(github.event.pull_request.head.ref, 'dependabot/')
               run: |
                   OUTPUT=true
                   echo "::set-output name=isSemantic::$OUTPUT"

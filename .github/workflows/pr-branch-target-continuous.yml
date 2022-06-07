@@ -2,7 +2,7 @@ name: "Target Branch PR Check"
 on:
     workflow_call:
     pull_request:
-        types: [opened, synchronize, edited]
+        types: [opened, reopened, synchronize, edited]
 jobs:
     pr-branch-confirmation:
         name: "Confirm that target branch for PR is main or master"
@@ -17,6 +17,7 @@ jobs:
               if: >
                   startsWith(github.event.pull_request.base.ref, 'master')||
                   startsWith(github.event.pull_request.base.ref, 'main') ||
+                  startsWith(github.event.pull_request.base.ref, 'chore/dependabot') ||
                   startsWith(github.event.pull_request.base.ref, 'build/')
               run: |
                   OUTPUT=true
