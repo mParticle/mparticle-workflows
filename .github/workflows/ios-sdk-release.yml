@@ -1,7 +1,7 @@
 name: iOS SDK Release
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       dryRun:
         description: Do a dry run to preview instead of a real release [true/false]
