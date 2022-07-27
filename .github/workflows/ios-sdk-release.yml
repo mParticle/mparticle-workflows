@@ -5,6 +5,7 @@ on:
     inputs:
       dryRun:
         description: Do a dry run to preview instead of a real release [true/false]
+        type: string
         required: true
         default: "true"
 
