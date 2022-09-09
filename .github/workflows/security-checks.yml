@@ -1,0 +1,83 @@
+name: "Static analysis checks for security vulnerabilities"
+on:
+  workflow_call:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  set-scan-configs:
+    name: "Determine which checks to run and set environmental variables"
+    runs-on: ubuntu-latest
+    outputs:
+      IS_MOBILE: ${{ steps.set-mobsfscan.outputs.IS_MOBILE }}
+      SEMGREP_RULES: ${{ steps.set-semgrep.outputs.SEMGREP_RULES }}
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "Determine which Semgrep config(s) to use"
+        id: set-semgrep
+        run: |
+          REPO_NAME=${{ github.event.repository.name }}
+
+          if [[ $REPO_NAME =~ "/android/" ]]; then
+              SEMGREP_RULES="p/java p/kotlin p/javascript p/bash p/yaml"
+          elif [[ $REPO_NAME =~ "/apple/" ]]; then
+              SEMGREP_RULES="p/ci p/javascript p/ruby p/bash p/yaml"
+          elif [[ $REPO_NAME =~ "/web/" || $REPO_NAME =~ "/node/" ]]; then
+              SEMGREP_RULES="p/javascript p/typescript"
+          else
+              SEMGREP_RULES="auto"
+          fi
+
+          echo "::set-output name=SEMGREP_RULES::$SEMGREP_RULES"
+          echo "Setting SEMGREP_RULES to \'$SEMGREP_RULES\'"
+
+      - name: "Enable mobsfscan if this is a mobile repo"
+        id: set-mobsfscan
+        run: |
+          REPO_NAME=${{ github.event.repository.name }}
+
+          if [[ $REPO_NAME =~ "/android/" || $REPO_NAME =~ "/apple/" ]]; then
+              IS_MOBILE=${{ true }}
+          else
+              IS_MOBILE=${{ false }}
+          fi
+
+          echo "::set-output name=IS_MOBILE::$IS_MOBILE"
+          echo "Setting IS_MOBILE to \'$IS_MOBILE\'"
+
+  run-semgrep:
+    name: "Run Semgrep to find vulnerabilities and security antipatterns"
+    needs: set-scan-configs
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    if:
+      # Skip dependabot-opened PR's due to permission issues
+      # From https://semgrep.dev/docs/semgrep-ci/sample-ci-configs/#github-actions
+      (github.actor != 'dependabot[bot]')
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "Run Semgrep"
+        run: "semgrep ci"
+        env:
+          SEMGREP_RULES: ${{ needs.set-scan-configs.outputs.SEMGREP_RULES }}
+
+  run-mobsfscan:
+    name: "Run mobsfscan to find Android/iOS vulnerabilities and misconfigurations"
+    needs: set-scan-configs
+    runs-on: ubuntu-latest
+    if:
+      # Skip dependabot-opened PR's due to permissions issues
+      (needs.set-scan-configs.outputs.IS_MOBILE == format('true') && github.actor != 'dependabot[bot]')
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "Run mobsfscan"
+        uses: MobSF/mobsfscan@main
+        with:
+          args: '. --sonarqube'
