@@ -21,9 +21,9 @@ jobs:
           REPO_NAME=${{ github.event.repository.name }}
 
           if [[ $REPO_NAME =~ "/android/" ]]; then
-              SEMGREP_RULES="p/java p/kotlin p/javascript p/bash p/yaml"
+              SEMGREP_RULES="p/java p/kotlin p/javascript r/bash r/yaml"
           elif [[ $REPO_NAME =~ "/apple/" ]]; then
-              SEMGREP_RULES="p/ci p/javascript p/ruby p/bash p/yaml"
+              SEMGREP_RULES="p/ci p/javascript p/ruby r/bash r/yaml"
           elif [[ $REPO_NAME =~ "/web/" || $REPO_NAME =~ "/node/" ]]; then
               SEMGREP_RULES="p/javascript p/typescript"
           else
@@ -61,10 +61,23 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@v3
 
+      - name: "Determine base branch"
+        run: |
+          if [[ -n $(git branch --list main) ]]; then
+              echo "SEMGREP_BASELINE_REF=main" >> $GITHUB_ENV
+          elif [[ -n $(git branch --list master) ]]; then
+              echo "SEMGREP_BASELINE_REF=master" >> $GITHUB_ENV
+          else
+              echo "Could not find either main or master branch! Defaulting to HEAD^"
+              echo "SEMGREP_BASELINE_REF=HEAD^" >> $GITHUB_ENV
+              "{environment_variable_name}={value}" >> $GITHUB_ENV
+          fi
+
       - name: "Run Semgrep"
         run: "semgrep ci"
         env:
           SEMGREP_RULES: ${{ needs.set-scan-configs.outputs.SEMGREP_RULES }}
+          SEMGREP_BASELINE_REF: ${{ env.SEMGREP_BASELINE_REF }}  # enables diff-aware scans
 
   run-mobsfscan:
     name: "Run mobsfscan to find Android/iOS vulnerabilities and misconfigurations"
