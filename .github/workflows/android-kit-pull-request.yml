@@ -4,7 +4,7 @@ on:
 jobs:
   pr-branch-confirmation:
       name: "Confirm that target branch for PR is main or master"
-      runs-on: ubuntu-18.04
+      runs-on: ubuntu-latest
       steps:
           - name: "echo PR target branch"
             run: |
@@ -74,7 +74,7 @@ jobs:
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.3.3
+          gradle-version: 7.5.1
           build-root-directory: kit
           arguments: clean assemble test -Pversion=${{ steps.core-version.outputs.coreVersion }}
       - name: "Archive Test Results"
@@ -125,7 +125,7 @@ jobs:
       - name: "Run Lint Checks"
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.3.3
+          gradle-version: 7.5.1
           build-root-directory: kit
           arguments: lint -Pversion=${{ steps.core-version.outputs.coreVersion }}
       - name: "Archive Lint Results"
