@@ -5,7 +5,6 @@ on:
 jobs:
   run-semgrep:
     name: "Run Semgrep to find vulnerabilities and security antipatterns"
-    needs: set-scan-configs
     runs-on: ubuntu-latest
     container:
       image: returntocorp/semgrep
@@ -53,7 +52,6 @@ jobs:
 
   run-mobsfscan:
     name: "Run mobsfscan to find Android/iOS vulnerabilities and misconfigurations"
-    needs: set-scan-configs
     runs-on: ubuntu-latest
     if:
       # Skip dependabot-opened PR's due to permissions issues
