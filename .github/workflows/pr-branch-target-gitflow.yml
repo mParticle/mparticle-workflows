@@ -5,7 +5,7 @@ jobs:
     pr-branch-confirmation:
         name: "Confirm that target branch for PR is development or build/"
         if: ${{ github.actor != 'dependabot[bot]' }}
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-latest
         steps:
             - name: "echo PR target branch"
               run: |

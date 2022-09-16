@@ -7,7 +7,7 @@ jobs:
     pr-branch-name-check:
         name: "Check PR for semantic branch name"
         if: ${{ github.actor != 'dependabot[bot]' }}
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-latest
         steps:
             - name: "Set PR branch validity"
               id: is-semantic
