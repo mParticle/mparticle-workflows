@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     if:
       # Skip dependabot-opened PR's due to permissions issues
-      (github.actor != 'dependabot[bot]' && (contains(github.event.repository.name, "android") || contains(github.event.repository.name, "apple"))
+      (github.actor != 'dependabot[bot]' && (contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
