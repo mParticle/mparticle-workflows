@@ -8,10 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: returntocorp/semgrep
-    if:
-      # Skip dependabot-opened PR's due to permission issues
-      # From https://semgrep.dev/docs/semgrep-ci/sample-ci-configs/#github-actions
-      (github.actor != 'dependabot[bot]')
+    if: >
+      github.actor != 'dependabot[bot]' &&
+      (contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
@@ -56,9 +55,9 @@ jobs:
   run-mobsfscan:
     name: "Run mobsfscan to find Android/iOS vulnerabilities and misconfigurations"
     runs-on: ubuntu-latest
-    if:
-      # Skip dependabot-opened PR's due to permissions issues
-      (github.actor != 'dependabot[bot]' && (contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
+    if: >
+      github.actor != 'dependabot[bot]' &&
+      ((contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
