@@ -13,16 +13,10 @@ jobs:
       github.actor != 'dependabot[bot]' &&
       ( contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple') )
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v3
-
       - name: "Determine base branch"
         run: |
           # NOTE: This is a temporary measure in light of https://github.com/actions/runner/issues/2033
           git config --global --add safe.directory $(pwd)
-
-          echo $(pwd)
-          echo $(git status)
 
           if [[ -n $(git branch --list main) ]]; then
               echo "SEMGREP_BASELINE_REF=main" >> $GITHUB_ENV
@@ -32,6 +26,14 @@ jobs:
               echo "Could not find either main or master branch! Defaulting to HEAD^"
               echo "SEMGREP_BASELINE_REF=HEAD^" >> $GITHUB_ENV
           fi
+
+      - name: "Checkout this branch"
+        uses: actions/checkout@v3
+
+      - name: "Checkout base branch"
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.SEMGREP_BASELINE_REF }}
 
       - name: "Determine which Semgrep config(s) to use"
         run: |
