@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: returntocorp/semgrep
-    if: >
+    if: |
       github.actor != 'dependabot[bot]' &&
-      (contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
+      ( contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple') )
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
@@ -55,9 +55,9 @@ jobs:
   run-mobsfscan:
     name: "Run mobsfscan to find Android/iOS vulnerabilities and misconfigurations"
     runs-on: ubuntu-latest
-    if: >
+    if: |
       github.actor != 'dependabot[bot]' &&
-      ((contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
+      ( contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
