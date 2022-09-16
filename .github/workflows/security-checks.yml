@@ -1,13 +1,14 @@
 name: "Static analysis checks for security vulnerabilities"
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   run-semgrep:
     name: "Run Semgrep to find vulnerabilities and security antipatterns"
     runs-on: ubuntu-latest
     container:
-      image: returntocorp/semgrep
+      image: returntocorp/semgrep-action
     if: |
       github.actor != 'dependabot[bot]' &&
       ( contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple') )
@@ -19,6 +20,9 @@ jobs:
         run: |
           # NOTE: This is a temporary measure in light of https://github.com/actions/runner/issues/2033
           git config --global --add safe.directory $(pwd)
+
+          echo $(pwd)
+          echo $(git status)
 
           if [[ -n $(git branch --list main) ]]; then
               echo "SEMGREP_BASELINE_REF=main" >> $GITHUB_ENV
