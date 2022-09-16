@@ -18,6 +18,9 @@ jobs:
 
       - name: "Determine base branch"
         run: |
+          # NOTE: This is a temporary measure in light of https://github.com/actions/runner/issues/2033
+          chown -R $(id -u):$(id -g) $PWD
+
           if [[ -n $(git branch --list main) ]]; then
               echo "SEMGREP_BASELINE_REF=main" >> $GITHUB_ENV
           elif [[ -n $(git branch --list master) ]]; then
