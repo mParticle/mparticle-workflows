@@ -1,5 +1,5 @@
 
-name: Create Jira Comment
+name: "Create Jira Comment"
 
 on:
   issue_comment:
