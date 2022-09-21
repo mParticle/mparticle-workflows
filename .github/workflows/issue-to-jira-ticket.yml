@@ -2,6 +2,7 @@
 name: Create Jira Issue
 
 on:
+  workflow_call:
   issues:
     types: ["opened"]
 
