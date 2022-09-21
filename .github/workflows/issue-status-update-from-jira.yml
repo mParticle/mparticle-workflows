@@ -74,7 +74,7 @@ jobs:
           curl \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{github.token}}" \
+          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
           ${{ steps.sub.outputs.value }} \
           -d '{"state":"open"}'
       
@@ -84,13 +84,13 @@ jobs:
           curl \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{github.token}}" \
+          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
           ${{ steps.sub.outputs.value }} \
           -d '{"state":"closed", "state_reason":"not_planned"}'
           curl \
           -X POST \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{github.token}}" \
+          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
           ${{ steps.sub.outputs.value }}/comments \
           -d '{"body":"mParticle ticket status has been changed to Wont Do"}'
           
@@ -100,7 +100,7 @@ jobs:
           curl \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{github.token}}" \
+          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
           ${{ steps.sub.outputs.value }} \
           -d '{"state":"closed"}'
         
@@ -110,6 +110,6 @@ jobs:
           curl \
           -X POST \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{github.token}}" \
+          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
           ${{ steps.sub.outputs.value }}/comments \
           -d '{"body":"mParticle ticket status has been changed to ${{  github.event.inputs.ticket_status }}"}'
