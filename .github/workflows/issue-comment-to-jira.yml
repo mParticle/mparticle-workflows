@@ -2,6 +2,7 @@
 name: "Create Jira Comment"
 
 on:
+  workflow_call:
   issue_comment:
     types: ["created"]
 
