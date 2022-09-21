@@ -1,0 +1,47 @@
+
+name: Create Jira Comment
+
+on:
+  issue_comment:
+    types: ["created"]
+
+jobs:
+  issue-commented:
+    name: "Comment Issue"
+    runs-on: ubuntu-latest
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    steps:
+      - name: "Checkout Branch"
+        uses: actions/checkout@v2
+
+      - name: "Login"
+        uses: atlassian/gajira-login@master
+
+      - name: "Get Issue"
+        id: get
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'get-issue'
+
+      - name: "Log created issue"
+        run: echo "${{ steps.get.outputs.issue-labels }}"   
+        
+      - name: Find in commit messages
+        id: find
+        uses: atlassian/gajira-find-issue-key@master
+        with:
+          string: ${{ steps.get.outputs.issue-labels }}  
+          
+      - name: "Log found issue"
+        run: |
+          echo "${{ steps.find.outputs.issue }}"  
+          echo "${{ github.event.issue }}"  
+        
+      - name: "Create comment"
+        uses: atlassian/gajira-comment@master
+        with:
+          issue: ${{ steps.find.outputs.issue }}
+          comment: ${{ github.event.comment.body }}

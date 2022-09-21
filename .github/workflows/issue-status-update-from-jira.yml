@@ -1,0 +1,115 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Update Github Issue Status
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      jira_ticket:
+        type: string
+        description: Jira ticket number
+        required: true
+      ticket_status:
+        type: choice
+        description: Jira ticket status
+        required: true
+        options: 
+        - To Do
+        - In Progress
+        - In Review
+        - In Validation
+        - Blocked
+        - Ice Boxed
+        - Backlog
+        - Done
+        - Won't Do
+  repository_dispatch:
+
+jobs:
+  update-issue-status:
+    runs-on: ubuntu-latest
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    steps:
+      - name: Login
+        uses: atlassian/gajira-login@master
+
+      - name: Get Jira Ticket Links
+        uses: fjogeleit/http-request-action@v1.11.0
+        id: get_links
+        with:
+          url: ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ github.event.inputs.jira_ticket }}/remotelink
+          method: GET
+          username: ${{ env.JIRA_USER_EMAIL }}
+          password: ${{ env.JIRA_API_TOKEN }}
+          customHeaders: '{"Content-Type": "application/json"}'
+
+      - run: echo ${{ steps.get_links.outputs.response }}
+      
+      - name: Parse URL from List
+        id: parse_url
+        run: | 
+          echo ::set-output name=issue_url::`echo '${{ steps.get_links.outputs.response }}' | jq '.[]|select(.object.title | startswith("Github Issue Link:")).object.url'`
+
+      - uses: mad9000/actions-find-and-replace-string@2
+        id: sub
+        with:
+          source: '${{ steps.parse_url.outputs.issue_url }}'
+          find: github.com
+          replace: api.github.com/repos
+
+      - run: echo  ${{ steps.sub.outputs.value }}
+      
+      - name: Set variable closed
+        id: set_variable
+        if: contains(fromJson('["Done", "Won\u0027t Do"]'), github.event.inputs.ticket_status) 
+        run: echo ::set-output name=ticket_status::closed
+
+      - name: Set Ticket Status Open
+        if: ${{ steps.set_variable.outputs.ticket_status != 'closed' }}
+        run: |
+          curl \
+          -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{github.token}}" \
+          ${{ steps.sub.outputs.value }} \
+          -d '{"state":"open"}'
+      
+      - name: Set Ticket Status, Wont do
+        if: contains(fromJson('["Won\u0027t Do"]'), github.event.inputs.ticket_status)
+        run: |
+          curl \
+          -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{github.token}}" \
+          ${{ steps.sub.outputs.value }} \
+          -d '{"state":"closed", "state_reason":"not_planned"}'
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{github.token}}" \
+          ${{ steps.sub.outputs.value }}/comments \
+          -d '{"body":"mParticle ticket status has been changed to Wont Do"}'
+          
+      - name: Set Ticket Status Closed
+        if: ${{ steps.set_variable.outputs.ticket_status == 'closed' && (contains(fromJson('["Done"]'), github.event.inputs.ticket_status))}} 
+        run: |
+          curl \
+          -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{github.token}}" \
+          ${{ steps.sub.outputs.value }} \
+          -d '{"state":"closed"}'
+        
+      - name: Comment status
+        if: ${{ steps.set_variable.outputs.ticket_status != 'closed' || (contains(fromJson('["Done"]'), github.event.inputs.ticket_status))}}
+        run: |
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{github.token}}" \
+          ${{ steps.sub.outputs.value }}/comments \
+          -d '{"body":"mParticle ticket status has been changed to ${{  github.event.inputs.ticket_status }}"}'
