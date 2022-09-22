@@ -16,12 +16,13 @@ on:
         description: Jira ticket status
         required: true
         options: 
+        - Open
         - To Do
         - In Progress
         - In Review
         - In Validation
         - Blocked
-        - Ice Boxed
+        - Ice Box
         - Backlog
         - Done
         - Won't Do
