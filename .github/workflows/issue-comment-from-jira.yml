@@ -1,0 +1,63 @@
+# This is a workflow add a comment on a GitHub issue
+
+name: Add Github Comment
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      jira_ticket:
+        type: string
+        description: Jira ticket number
+        required: true
+      comment:
+        type: string
+        description: Jira ticket status
+        required: true
+  repository_dispatch:
+
+jobs:
+  add-issue-comment:
+    runs-on: ubuntu-latest
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    steps:
+      - name: Login
+        uses: atlassian/gajira-login@master
+
+      - name: Get Jira Ticket Links
+        uses: fjogeleit/http-request-action@v1.11.0
+        id: get_links
+        with:
+          url: ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ github.event.inputs.jira_ticket }}/remotelink
+          method: GET
+          username: ${{ env.JIRA_USER_EMAIL }}
+          password: ${{ env.JIRA_API_TOKEN }}
+          customHeaders: '{"Content-Type": "application/json"}'
+
+      - run: echo ${{ steps.get_links.outputs.response }}
+      
+      - name: Parse URL from List
+        id: parse_url
+        run: | 
+          echo ::set-output name=issue_url::`echo '${{ steps.get_links.outputs.response }}' | jq '.[]|select(.object.title | startswith("Github Issue Link:")).object.url'`
+      
+      - uses: mad9000/actions-find-and-replace-string@2
+        id: sub
+        with:
+          source: '${{ steps.parse_url.outputs.issue_url }}'
+          find: github.com
+          replace: api.github.com/repos
+
+      - run: echo  ${{ steps.sub.outputs.value }}
+      
+      - name: Add Comment
+        run: |
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
+          ${{ steps.sub.outputs.value }}/comments \
+          -d '{"body":"${{  github.event.inputs.comment }}"}'
