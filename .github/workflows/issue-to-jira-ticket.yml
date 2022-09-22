@@ -30,6 +30,12 @@ jobs:
           description: |
             ${{ github.event.issue.body }}
           fields: '{"parent": { "key": "SQDSDKS-4555" }}'
+          
+      - name: "Create First Comment"
+        uses: atlassian/gajira-comment@master
+        with:
+          issue: ${{ steps.create.outputs.issue }}
+          comment: "GitHub Issue: ${{ github.event.issue.html_url }}"
       
       - name: Link Jira Issue
         run: |
