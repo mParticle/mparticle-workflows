@@ -1,0 +1,70 @@
+name: Create Jira Issue
+
+on:
+  workflow_call:
+  issues:
+    types: ["opened"]
+
+jobs:
+  create-issue:
+    name: "Create Issue"
+    runs-on: ubuntu-latest
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    steps:
+
+      - name: "Login"
+        uses: atlassian/gajira-login@master
+
+      - name: "Create"
+        id: create
+        uses: atlassian/gajira-create@master
+        with:
+          project: "SQDSDKS"
+          issuetype: "Story"
+          summary: |
+            ${{ github.event.issue.title }}
+          description: |
+            ${{ github.event.issue.body }}
+          fields: '{"parent": { "key": "SQDSDKS-4555" }}'
+          
+      - name: "Create First Comment"
+        uses: atlassian/gajira-comment@master
+        with:
+          issue: ${{ steps.create.outputs.issue }}
+          comment: "GitHub Issue: ${{ github.event.issue.html_url }}"
+      
+      - name: Link Jira Issue
+        run: |
+          curl -k -D- -u ${{ env.JIRA_USER_EMAIL }}:${{ env.JIRA_API_TOKEN }} -X POST -H 'Content-Type: application/json' -d \
+          '{"object": {"url":"${{ github.event.issue.html_url }}","title":"Github Issue Link: ${{ github.event.repository.full_name }}"}}' \
+          ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.create.outputs.issue }}/remotelink
+          
+      - name: "Log created issue"
+        run: echo "Issue ${{ steps.create.outputs.issue }} was created"
+
+      - name: "Create Github comment"
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Tracked internally as ${{ steps.create.outputs.issue }} was created
+          reactions: '+1'
+          
+      - name: Create label
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-label'
+          label-name: ${{ steps.create.outputs.issue }}
+          label-color: '0095b3'
+          label-desc: ${{ steps.create.outputs.issue }} 
+          
+      - name: Add labels
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'add-labels'
+          issue-number: ${{ github.event.issue.number }} 
+          labels: ${{ steps.create.outputs.issue }}    
+         
