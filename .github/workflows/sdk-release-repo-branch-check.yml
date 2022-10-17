@@ -5,10 +5,10 @@ jobs:
   # SDK release must be done from the public/master or public/main branch
   confirm-public-repo-master-branch:
     name: Confirm release is run on public/master or public/main branch
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Git checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Repo and Branch Check
         run: |
