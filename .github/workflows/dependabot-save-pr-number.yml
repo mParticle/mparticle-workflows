@@ -1,0 +1,24 @@
+name: "Dependabot Save PR Number"
+
+on:
+  workflow_call:
+
+jobs:
+  dependabot-save-pr-number:
+    name: "Save PR Number for Dependabot Automerge"
+    if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout PR branch"
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: "Save Pull Request Number"
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/NR
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr
+          path: pr/
