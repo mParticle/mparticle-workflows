@@ -4,36 +4,9 @@ on:
   workflow_call:
 
 jobs:
-
   pr-branch-confirmation:
-      name: "Confirm that target branch for PR is main or master"
-      runs-on: ubuntu-latest
-      steps:
-          - name: "echo PR target branch"
-            run: |
-                echo ${{ github.event.pull_request.base.ref }}
-          - name: "Set PR target branch validity"
-            id: is-valid
-            if: >
-                startsWith(github.event.pull_request.base.ref, 'development') ||
-                startsWith(github.event.pull_request.base.ref, 'build/')
-            run: |
-                OUTPUT=true
-                echo "::set-output name=isValid::$OUTPUT"
-          - name: "Echo isValid"
-            run: |
-                echo ${{ steps.is-valid.outputs.isValid }}
-          - name: "PR target branch is valid"
-            if: ${{steps.is-valid.outputs.isValid == 'true'}}
-            run: |
-                echo 'Pull request target branch is valid.'
-                echo ${{ steps.is-valid.outputs.isValid }}
-          - name: "PR target branch is invalid"
-            if: ${{ steps.is-valid.outputs.isValid != 'true'}}
-            run: |
-                echo ${{ steps.is-valid.outputs.isValid }}
-                echo 'Pull request target branch is not valid.'
-                exit 1
+    name: "Check PR for correct target branch"
+    uses: mParticle/mparticle-workflows/.github/workflows/pr-branch-target-gitflow.yml@main
 
   unit-tests:
     name: "Unit Tests"
@@ -193,20 +166,5 @@ jobs:
 
   automerge-dependabot:
     name: "Save PR Number for Dependabot Automerge"
-    needs: [ unit-tests, lint ]
-    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout PR branch"
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - name: "Save Pull Request Number"
-        run: |
-          mkdir -p ./pr
-          echo ${{ github.event.number }} > ./pr/NR
-      - uses: actions/upload-artifact@v3
-        with:
-          name: pr
-          path: pr/
+    needs: [ unit-tests, lint, kotlin-lint ]
+    uses: mParticle/mparticle-workflows/.github/workflows/dependabot-save-pr-number.yml@main
