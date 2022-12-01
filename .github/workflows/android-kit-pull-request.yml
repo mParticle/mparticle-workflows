@@ -15,8 +15,7 @@ jobs:
           - name: "Set PR target branch validity"
             id: is-valid
             if: >
-                startsWith(github.event.pull_request.base.ref, 'master')||
-                startsWith(github.event.pull_request.base.ref, 'main') ||
+                startsWith(github.event.pull_request.base.ref, 'development') ||
                 startsWith(github.event.pull_request.base.ref, 'build/')
             run: |
                 OUTPUT=true
