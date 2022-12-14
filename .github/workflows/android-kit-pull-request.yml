@@ -68,7 +68,7 @@ jobs:
 
   lint:
     name: "Lint Checks"
-    needs: [ pr-branch-confirmation ]
+    needs: [ pr-branch-target-gitflow, pr-branch-check-name, pr-title-check ]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
@@ -120,7 +120,7 @@ jobs:
 
   kotlin-lint:
     name: "Kotlin Lint Checks"
-    needs: [ pr-branch-confirmation ]
+    needs: [ pr-branch-target-gitflow, pr-branch-check-name, pr-title-check ]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
