@@ -9,15 +9,13 @@ module.exports = {
         releaseRules: [
             {type: 'feat', release: 'minor'},
             {type: 'build', release: 'minor'},
-            {type: 'fix', release: 'patch'},
-            {type: 'docs', release: 'patch'},
-            {type: 'style', release: 'patch'},
-            {type: 'refactor', release: 'patch'},
-            {type: 'perf', release: 'patch'},
-            {type: 'test', release: 'patch'},
-            {type: 'ci', release: 'patch'},
             {type: 'chore', release: 'patch'},
-            {type: 'revert', release: 'patch'}
+            {type: 'ci', release: 'patch'},
+            {type: 'docs', release: 'patch'},
+            {type: 'fix', release: 'patch'},
+            {type: 'refactor', release: 'patch'},
+            {type: 'revert', release: 'patch'},
+            {type: 'test', release: 'patch'}
        ]
       }
     ],
@@ -38,32 +36,7 @@ module.exports = {
               "hidden": false
             },
             {
-              "type": "fix",
-              "section": "Bug Fixes",
-              "hidden": false
-            },
-            {
-              "type": "docs",
-              "section": "Documentation",
-              "hidden": false
-            },
-            {
-              "type": "style",
-              "section": "Updates & Maintenance",
-              "hidden": false
-            },
-            {
-              "type": "refactor",
-              "section": "Updates & Maintenance",
-              "hidden": false
-            },
-            {
-              "type": "perf",
-              "section": "Updates & Maintenance",
-              "hidden": false
-            },
-            {
-              "type": "test",
+              "type": "chore",
               "section": "Updates & Maintenance",
               "hidden": false
             },
@@ -73,12 +46,27 @@ module.exports = {
               "hidden": false
             },
             {
-              "type": "chore",
+              "type": "docs",
+              "section": "Documentation",
+              "hidden": false
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes",
+              "hidden": false
+            },
+            {
+              "type": "refactor",
               "section": "Updates & Maintenance",
               "hidden": false
             },
             {
               "type": "revert",
+              "section": "Updates & Maintenance",
+              "hidden": false
+            },
+            {
+              "type": "test",
               "section": "Updates & Maintenance",
               "hidden": false
             }
@@ -104,7 +92,7 @@ module.exports = {
       {
         assets: ["CHANGELOG.md", "build.gradle", "README.md"],
         message:
-          "chore: ${nextRelease.version} \n\n${nextRelease.notes}",
+          "chore: ${nextRelease.version} (release) \n\n${nextRelease.notes}",
       },
     ],
   ],

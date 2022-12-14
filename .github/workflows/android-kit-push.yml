@@ -1,12 +1,13 @@
 name: "Android Kit Push Checks"
+
 on:
   workflow_call:
 
 jobs:
+
   unit-tests-maven:
     name: "Unit Tests Maven"
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v3
       - name: "Install JDK 11"
@@ -14,6 +15,7 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
+          cache: "gradle"
       - name: Clean and Run Unit Tests
         continue-on-error: true
         uses: gradle/gradle-build-action@v2
@@ -26,6 +28,7 @@ jobs:
         with:
           name: "unit-tests-results-maven"
           path: ./**/build/reports/**
+
   unit-tests-development:
     name: "Unit Tests Development"
     runs-on: ubuntu-latest
@@ -48,6 +51,7 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
+          cache: "gradle"
       - name: "Build Core"
         working-directory: core
         run: ./gradlew publishLocal
@@ -76,6 +80,7 @@ jobs:
         with:
           name: "unit-tests-results-development"
           path: ./**/build/reports/**
+
   lint-maven:
     name: "Lint Checks Maven"
     runs-on: ubuntu-latest
@@ -90,6 +95,7 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
+          cache: "gradle"
       - name: "Run Lint"
         uses: gradle/gradle-build-action@v2
         continue-on-error: true
@@ -102,6 +108,7 @@ jobs:
         with:
           name: "lint-results-maven"
           path: ./**/build/reports/**
+
   lint-development:
     name: "Lint Checks Development"
     runs-on: ubuntu-latest
@@ -124,6 +131,7 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
+          cache: "gradle"
       - name: "Build Core"
         working-directory: core
         run: ./gradlew publishLocal
@@ -151,4 +159,84 @@ jobs:
         if: ${{ always() }}
         with:
           name: "lint-results-development"
+          path: ./**/build/reports/**
+
+  kotlin-lint-maven:
+    name: "Kotlin Lint Checks Maven"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{github.head_ref}}
+      - name: "Install JDK 11"
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "11"
+          cache: "gradle"
+      - name: "Run Kotlin Lint"
+        uses: gradle/gradle-build-action@v2
+        continue-on-error: true
+        with:
+          gradle-version: 7.5.1
+          arguments: ktlint
+      - name: "Archive Lint Results"
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: "kotlin-lint-results-maven"
+          path: ./**/build/reports/**
+
+  kotlin-lint-development:
+    name: "Kotlin Lint Checks Development"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          path: kit
+          ref: ${{github.head_ref}}
+      - name: "Checkout Core"
+        uses: actions/checkout@v3
+        with:
+          repository: mParticle/android-sdk
+          fetch-depth: 0
+          path: core
+          ref: development
+      - name: "Install JDK 11"
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "11"
+          cache: "gradle"
+      - name: "Build Core"
+        working-directory: core
+        run: ./gradlew publishLocal
+      - name: "Get Build Version"
+        id: core-version
+        run: |
+          ANDROID_CORE_DIR=`find  ~/.m2 -type d -name android-core`;
+          echo "android-core m2 directory:"
+          echo $ANDROID_CORE_DIR;
+          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name *-SNAPSHOT`;
+          echo "android-core m2 version directory:"
+          echo $VERSION_DIR;
+          VERSION=`basename $VERSION_DIR`;
+          echo "android-core m2 version:";
+          echo $VERSION;
+          echo "::set-output name=coreVersion::$VERSION"
+      - name: "Clean and Run Unit Tests"
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.5.1
+          build-root-directory: kit
+          arguments: ktlintCheck -Pversion=${{ steps.core-version.outputs.coreVersion }}
+      - name: "Archive Lint Results"
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: "kotlin-lint-results-development"
           path: ./**/build/reports/**
