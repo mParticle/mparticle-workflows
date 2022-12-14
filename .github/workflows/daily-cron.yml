@@ -56,7 +56,6 @@ jobs:
         run: "semgrep --config=${{ env.SEMGREP_RULES}} ."
 
   regression-check:
-    needs: create-release-branch
     name: "Run regression"
     uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
     with:
