@@ -2,6 +2,17 @@ name: "Android Kit Push Checks"
 
 on:
   workflow_call:
+    inputs:
+      dryRun:
+        description: "Do a dry run to preview instead of a real release [true/false]"
+        required: false
+        default: "true"
+        type: string
+      branch_name:
+        description: "branch name to run tests on"
+        required: false
+        default: "development"
+        type: string
 
 jobs:
 
