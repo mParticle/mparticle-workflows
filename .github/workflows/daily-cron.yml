@@ -43,6 +43,7 @@ jobs:
 
   regression-check:
     name: "Run regression"
+    if: contains(github.repository, 'android')
     uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
     with:
       dryRun: "true"

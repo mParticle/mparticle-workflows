@@ -7,7 +7,7 @@ on:
       dryRun:
         description: "Do a dry run to preview instead of a real release [true/false]"
         required: false
-        default: "true"
+        default: "false"
         type: string
 
 jobs:

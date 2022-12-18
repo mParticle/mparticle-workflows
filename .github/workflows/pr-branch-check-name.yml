@@ -12,7 +12,7 @@ jobs:
             - name: "Set PR branch validity"
               id: is-semantic
               if: >
-                  startsWith(github.event.pull_request.head.ref, 'feat/')||
+                  startsWith(github.event.pull_request.head.ref, 'feat/') ||
                   startsWith(github.event.pull_request.head.ref, 'fix/') ||
                   startsWith(github.event.pull_request.head.ref, 'perf/') ||
                   startsWith(github.event.pull_request.head.ref, 'docs/') ||
