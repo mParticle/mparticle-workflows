@@ -2,6 +2,12 @@ name: "SonarCloud Check"
 
 on:
   workflow_call:
+    inputs:
+      app_relative_path:
+        description: 'repo path for sample app'
+        required: false
+        default: "./"
+        type: string
 
 jobs:
   sonarcloud-check:
@@ -40,4 +46,5 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: "Build and analyze"
+        working-directory: ${{ inputs.app_relative_path }}
         run: ./gradlew sonarqube --info
