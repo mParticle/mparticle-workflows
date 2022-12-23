@@ -50,7 +50,7 @@ jobs:
     name: "Run regression"
     uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
     with:
-      dryRun: ${{ github.event.inputs.dryRun }}
+      dryRun: ${{ inputs.dryRun }}
       branch_name: release/${{ github.run_number }}
     secrets: inherit
 
@@ -67,15 +67,15 @@ jobs:
           token: ${{ secrets.MP_SEMANTIC_RELEASE_BOT }}
           ref: main
       - name: "Merge release branch into main branch"
-        if: ${{ github.event.inputs.dryRun == 'false' }}
+        if: ${{ inputs.dryRun == 'false' }}
         run: |
           git pull origin release/${{ github.run_number }}
       - name: "Push release commits to main branch"
-        if: ${{ github.event.inputs.dryRun == 'false'}}
+        if: ${{ inputs.dryRun == 'false'}}
         run: |
           git push origin HEAD:main
           git push origin HEAD:development
       - name: "Delete release branch"
-        if: ${{ github.event.inputs.dryRun == 'false' }}
+        if: ${{ inputs.dryRun == 'false' }}
         run: |
           git push --delete origin release/${{ github.run_number }}
