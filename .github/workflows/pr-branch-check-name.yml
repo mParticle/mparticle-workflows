@@ -26,7 +26,7 @@ jobs:
                   startsWith(github.event.pull_request.head.ref, 'dependabot/')
               run: |
                   OUTPUT=true
-                  echo "::set-output name=isSemantic::$OUTPUT"
+                  echo "isSemantic=$OUTPUT" >> $GITHUB_OUTPUT
             - name: "echo isSemantic"
               run: |
                   echo ${{ steps.is-semantic.outputs.isSemantic }}

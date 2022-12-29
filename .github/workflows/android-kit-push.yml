@@ -78,7 +78,7 @@ jobs:
           VERSION=`basename $VERSION_DIR`;
           echo "android-core m2 version:";
           echo $VERSION;
-          echo "::set-output name=coreVersion::$VERSION"
+          echo "coreVersion=$VERSION" >> $GITHUB_OUTPUT
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:
@@ -158,7 +158,7 @@ jobs:
           VERSION=`basename $VERSION_DIR`;
           echo "android-core m2 version:";
           echo $VERSION;
-          echo "::set-output name=coreVersion::$VERSION"
+          echo "coreVersion=$VERSION" >> $GITHUB_OUTPUT
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:
@@ -238,7 +238,7 @@ jobs:
           VERSION=`basename $VERSION_DIR`;
           echo "android-core m2 version:";
           echo $VERSION;
-          echo "::set-output name=coreVersion::$VERSION"
+          echo "coreVersion=$VERSION" >> $GITHUB_OUTPUT
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:

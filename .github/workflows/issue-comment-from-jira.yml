@@ -42,7 +42,7 @@ jobs:
       - name: Parse URL from List
         id: parse_url
         run: | 
-          echo ::set-output name=issue_url::`echo '${{ steps.get_links.outputs.response }}' | jq '.[]|select(.object.title | startswith("Github Issue Link:")).object.url'`
+          echo issue_url=`echo '${{ steps.get_links.outputs.response }}' | jq '.[]|select(.object.title | startswith("Github Issue Link:")).object.url'`
       
       - uses: mad9000/actions-find-and-replace-string@2
         id: sub

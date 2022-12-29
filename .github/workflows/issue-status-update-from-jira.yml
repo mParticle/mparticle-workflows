@@ -68,7 +68,7 @@ jobs:
       - name: Set variable closed
         id: set_variable
         if: contains(fromJson('["Done", "Won\u0027t Do"]'), github.event.inputs.ticket_status) 
-        run: echo ::set-output name=ticket_status::closed
+        run: echo "ticket_status=closed" >> $GITHUB_OUTPUT
 
       - name: Set Ticket Status Open
         if: ${{ steps.set_variable.outputs.ticket_status != 'closed' }}

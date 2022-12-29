@@ -4,7 +4,6 @@ on:
 jobs:
     pr-branch-confirmation:
         name: "Confirm that target branch for PR is development or build/"
-        if: ${{ github.actor != 'dependabot[bot]' }}
         runs-on: ubuntu-latest
         steps:
             - name: "echo PR target branch"
@@ -18,7 +17,7 @@ jobs:
                   startsWith(github.event.pull_request.base.ref, 'build/')
               run: |
                   OUTPUT=true
-                  echo "::set-output name=isValid::$OUTPUT"
+                  echo "isValid=$OUTPUT" >> $GITHUB_OUTPUT
             - name: "echo isValid"
               run: |
                   echo ${{ steps.is-valid.outputs.isValid }}
