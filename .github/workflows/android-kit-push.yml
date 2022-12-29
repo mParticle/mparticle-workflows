@@ -192,7 +192,7 @@ jobs:
         continue-on-error: true
         with:
           gradle-version: 7.5.1
-          arguments: ktlint
+          arguments: ktlintCheck
       - name: "Archive Lint Results"
         uses: actions/upload-artifact@v3
         if: ${{ always() }}

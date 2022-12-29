@@ -71,7 +71,7 @@ jobs:
         run: |
           git pull origin release/${{ github.run_number }}
       - name: "Push release commits to main branch"
-        if: ${{ inputs.dryRun == 'false'}}
+        if: ${{ inputs.dryRun == 'false' }}
         run: |
           git push origin HEAD:main
           git push origin HEAD:development
