@@ -73,8 +73,8 @@ jobs:
       - name: "Push release commits to main branch"
         if: ${{ inputs.dryRun == 'false' }}
         run: |
-          git push -f origin HEAD:main
-          git push -f origin HEAD:development
+          git push origin HEAD:main
+          git push origin HEAD:development
       - name: "Delete release branch"
         if: ${{ inputs.dryRun == 'false' }}
         run: |
