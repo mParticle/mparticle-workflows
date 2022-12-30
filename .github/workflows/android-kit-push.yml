@@ -11,7 +11,7 @@ on:
       branch_name:
         description: "branch name to run tests on"
         required: false
-        default: ${{ github.head_ref }}
+        default: "development"
         type: string
 
 jobs:

@@ -33,7 +33,7 @@ jobs:
     uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
     with:
       dryRun: ${{ inputs.dryRun }}
-      branch_name: release/${{ github.run_number }}
+      branch_name: ${{ github.head_ref }}
     secrets: inherit
 
   automerge-dependabot:
