@@ -10,6 +10,9 @@ on:
             test_command_label:
                 description: 'Enter the Name of this test (for debugging)'
                 type: string
+            build_command:
+                description: 'Enter the NPM command that will build files'
+                type: string
             branch_name:
                 description: 'branch name to run tests on'
                 type: string
@@ -32,6 +35,9 @@ jobs:
 
             - name: Run NPM CI
               run: npm ci
+
+            - name: Run Build
+              run: ${{ inputs.build_command }}
 
             - name: Install Firefox Latest
               uses: browser-actions/setup-firefox@latest
