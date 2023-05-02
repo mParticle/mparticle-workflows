@@ -1,0 +1,56 @@
+name: Web Test Runner
+
+on:
+    workflow_call:
+        inputs:
+            # Maybe nees node version for matrix?
+            test_command:
+                description: 'Enter the NPM command that will run a test'
+                type: string
+            test_command_label:
+                description: 'Enter the Name of this test (for debugging)'
+                type: string
+            build_command:
+                description: 'Enter the NPM command that will build files'
+                type: string
+            branch_name:
+                description: 'branch name to run tests on'
+                type: string
+
+jobs:
+    run_test:
+        name: ${{ inputs.test_command_label }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  repository: ${{ github.event.pull_request.head.repo.full_name }}
+                  ref: ${{ inputs.branch_name }}
+
+            - name: NPM install
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+
+            - name: Run NPM CI
+              run: npm ci
+
+            - name: Run Build
+              run: ${{ inputs.build_command }}
+
+            - name: Install Firefox Latest
+              uses: browser-actions/setup-firefox@latest
+
+            - name: Log Firefox Version
+              run: firefox --version
+
+            - name: Run ${{ inputs.test_command_label }}
+              run: ${{ inputs.test_command }}
+
+            - name: Archive npm failure logs
+              uses: actions/upload-artifact@v3
+              if: failure()
+              with:
+                  name: npm-logs
+                  path: ~/.npm/_logs
