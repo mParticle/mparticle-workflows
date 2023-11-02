@@ -3,7 +3,7 @@ on:
   workflow_call:
 jobs:
   # SDK release must be done from the master or main branch
-  confirm-public-repo-master-branch:
+  confirm-master-main-branch:
     name: Confirm release is run on master or main branch
     runs-on: ubuntu-latest
     steps:
