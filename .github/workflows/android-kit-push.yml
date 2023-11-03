@@ -11,7 +11,7 @@ on:
       branch_name:
         description: "branch name to run tests on"
         required: false
-        default: "development"
+        default: "main"
         type: string
 
 jobs:
@@ -56,7 +56,7 @@ jobs:
           repository: mParticle/android-sdk
           fetch-depth: 0
           path: core
-          ref: development
+          ref: main
       - name: "Install JDK 11"
         uses: actions/setup-java@v3
         with:
@@ -65,14 +65,14 @@ jobs:
           cache: "gradle"
       - name: "Build Core"
         working-directory: core
-        run: ./gradlew publishLocal
+        run: ./gradlew publishLocal -PisRelease=true
       - name: "Get Build Version"
         id: core-version
         run: |
           ANDROID_CORE_DIR=`find  ~/.m2 -type d -name android-core`;
           echo "android-core m2 directory:"
           echo $ANDROID_CORE_DIR;
-          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name *-SNAPSHOT`;
+          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name 5*`;
           echo "android-core m2 version directory:"
           echo $VERSION_DIR;
           VERSION=`basename $VERSION_DIR`;
@@ -136,7 +136,7 @@ jobs:
           repository: mParticle/android-sdk
           fetch-depth: 0
           path: core
-          ref: development
+          ref: main
       - name: "Install JDK 11"
         uses: actions/setup-java@v3
         with:
@@ -145,14 +145,14 @@ jobs:
           cache: "gradle"
       - name: "Build Core"
         working-directory: core
-        run: ./gradlew publishLocal
+        run: ./gradlew publishLocal -PisRelease=true
       - name: "Get Build Version"
         id: core-version
         run: |
           ANDROID_CORE_DIR=`find  ~/.m2 -type d -name android-core`;
           echo "android-core m2 directory:"
           echo $ANDROID_CORE_DIR;
-          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name *-SNAPSHOT`;
+          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name 5*`;
           echo "android-core m2 version directory:"
           echo $VERSION_DIR;
           VERSION=`basename $VERSION_DIR`;
@@ -216,7 +216,7 @@ jobs:
           repository: mParticle/android-sdk
           fetch-depth: 0
           path: core
-          ref: development
+          ref: main
       - name: "Install JDK 11"
         uses: actions/setup-java@v3
         with:
@@ -225,14 +225,14 @@ jobs:
           cache: "gradle"
       - name: "Build Core"
         working-directory: core
-        run: ./gradlew publishLocal
+        run: ./gradlew publishLocal -PisRelease=true
       - name: "Get Build Version"
         id: core-version
         run: |
           ANDROID_CORE_DIR=`find  ~/.m2 -type d -name android-core`;
           echo "android-core m2 directory:"
           echo $ANDROID_CORE_DIR;
-          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name *-SNAPSHOT`;
+          VERSION_DIR=`find $ANDROID_CORE_DIR -type d -name 5*`;
           echo "android-core m2 version directory:"
           echo $VERSION_DIR;
           VERSION=`basename $VERSION_DIR`;
