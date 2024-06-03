@@ -23,7 +23,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   repository: ${{ github.event.pull_request.head.repo.full_name }}
                   ref: ${{ inputs.branch_name }}
@@ -49,8 +49,9 @@ jobs:
               run: ${{ inputs.test_command }}
 
             - name: Archive npm failure logs
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                   name: npm-logs
                   path: ~/.npm/_logs
+                  overwrite: true
