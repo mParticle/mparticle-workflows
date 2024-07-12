@@ -1,6 +1,9 @@
 name: Web Kit Build & Test
 
-on: pull_request
+on:
+    workflow_call:
+    pull_request:
+        types: [opened, reopened, synchronize, edited]
 
 jobs:
     build-and-test:
