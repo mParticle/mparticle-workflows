@@ -20,48 +20,49 @@ jobs:
     name: "Unit Tests Maven"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: "Install JDK 11"
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - name: "Install JDK 17"
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "17"
           cache: "gradle"
       - name: Clean and Run Unit Tests
         continue-on-error: true
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 7.5.1
           arguments: clean assemble test
-      - name: "Archive Test Results"
-        uses: actions/upload-artifact@v3
+      - name: "Archive Maven Test Results"
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: "unit-tests-results-maven"
           path: ./**/build/reports/**
+          overwrite: true
 
   unit-tests-development:
     name: "Unit Tests Development"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           path: kit
           ref: ${{ inputs.branch_name }}
       - name: "Checkout Core"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: mParticle/android-sdk
           fetch-depth: 0
           path: core
           ref: main
-      - name: "Install JDK 11"
-        uses: actions/setup-java@v3
+      - name: "Install JDK 17"
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "17"
           cache: "gradle"
       - name: "Build Core"
         working-directory: core
@@ -80,68 +81,70 @@ jobs:
           echo $VERSION;
           echo "coreVersion=$VERSION" >> $GITHUB_OUTPUT
       - name: "Clean and Run Unit Tests"
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 7.5.1
           build-root-directory: kit
           arguments: clean assemble test -Pversion=${{ steps.core-version.outputs.coreVersion }}
-      - name: "Archive Test Results"
-        uses: actions/upload-artifact@v3
+      - name: "Archive Development Test Results"
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: "unit-tests-results-development"
           path: ./**/build/reports/**
+          overwrite: true
 
   lint-maven:
     name: "Lint Checks Maven"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ inputs.branch_name }}
-      - name: "Install JDK 11"
-        uses: actions/setup-java@v3
+      - name: "Install JDK 17"
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "17"
           cache: "gradle"
       - name: "Run Lint"
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         continue-on-error: true
         with:
           gradle-version: 7.5.1
           arguments: lint
-      - name: "Archive Lint Results"
-        uses: actions/upload-artifact@v3
+      - name: "Archive Maven Lint Results"
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: "lint-results-maven"
           path: ./**/build/reports/**
+          overwrite: true
 
   lint-development:
     name: "Lint Checks Development"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           path: kit
           ref: ${{ inputs.branch_name }}
       - name: "Checkout Core"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: mParticle/android-sdk
           fetch-depth: 0
           path: core
           ref: main
-      - name: "Install JDK 11"
-        uses: actions/setup-java@v3
+      - name: "Install JDK 17"
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "17"
           cache: "gradle"
       - name: "Build Core"
         working-directory: core
@@ -160,68 +163,70 @@ jobs:
           echo $VERSION;
           echo "coreVersion=$VERSION" >> $GITHUB_OUTPUT
       - name: "Clean and Run Unit Tests"
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 7.5.1
           build-root-directory: kit
           arguments: lint -Pversion=${{ steps.core-version.outputs.coreVersion }}
-      - name: "Archive Lint Results"
-        uses: actions/upload-artifact@v3
+      - name: "Archive Development Lint Results"
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: "lint-results-development"
           path: ./**/build/reports/**
+          overwrite: true
 
   kotlin-lint-maven:
     name: "Kotlin Lint Checks Maven"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ inputs.branch_name }}
-      - name: "Install JDK 11"
-        uses: actions/setup-java@v3
+      - name: "Install JDK 17"
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "17"
           cache: "gradle"
       - name: "Run Kotlin Lint"
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         continue-on-error: true
         with:
           gradle-version: 7.5.1
           arguments: ktlintCheck
-      - name: "Archive Lint Results"
-        uses: actions/upload-artifact@v3
+      - name: "Archive Maven Lint Results"
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: "kotlin-lint-results-maven"
           path: ./**/build/reports/**
+          overwrite: true
 
   kotlin-lint-development:
     name: "Kotlin Lint Checks Development"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           path: kit
           ref: ${{ inputs.branch_name }}
       - name: "Checkout Core"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: mParticle/android-sdk
           fetch-depth: 0
           path: core
           ref: main
-      - name: "Install JDK 11"
-        uses: actions/setup-java@v3
+      - name: "Install JDK 17"
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "17"
           cache: "gradle"
       - name: "Build Core"
         working-directory: core
@@ -240,14 +245,15 @@ jobs:
           echo $VERSION;
           echo "coreVersion=$VERSION" >> $GITHUB_OUTPUT
       - name: "Clean and Run Unit Tests"
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 7.5.1
           build-root-directory: kit
           arguments: ktlintCheck -Pversion=${{ steps.core-version.outputs.coreVersion }}
-      - name: "Archive Lint Results"
-        uses: actions/upload-artifact@v3
+      - name: "Archive Development Lint Results"
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: "kotlin-lint-results-development"
           path: ./**/build/reports/**
+          overwrite: true

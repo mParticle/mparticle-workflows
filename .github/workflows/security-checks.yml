@@ -16,10 +16,10 @@ jobs:
       github.actor != 'dependabot[bot]'
     steps:
       - name: "Checkout this branch"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Checkout base branch"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.base_branch }}
 
@@ -54,7 +54,7 @@ jobs:
       ( contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Run mobsfscan"
         uses: MobSF/mobsfscan@main
