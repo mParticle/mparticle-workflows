@@ -1,0 +1,33 @@
+name: Respond and Close Issue
+
+on:
+  workflow_call:
+    inputs:
+      issue_number:
+        required: true
+        type: number
+      repository:
+        required: true
+        type: string
+      user_login:
+        required: true
+        type: string
+
+jobs:
+  respond_and_close:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add a comment
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ inputs.repository }}/issues/${{ inputs.issue_number }}/comments \
+            -d '{"body": "Thank you for opening this issue, @${{ github.event.issue.user.login }}!  In order to get you the fastest response to your issue, you should instead open a ticket at http://support.mparticle.com. This issue will now be automatically closed."}'
+      - name: Close the issue
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ inputs.repository }}/issues/${{ inputs.issue_number }} \
+            -d '{"state": "closed"}'
