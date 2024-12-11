@@ -10,7 +10,7 @@ on:
         required: true
         type: string
       user_login:
-          description: Github Login for User who opened the issue.
+        description: Github Login for User who opened the issue.
         required: true
         type: string
 
