@@ -53,7 +53,7 @@ jobs:
           mp planning:data-plan-versions:fetch --dataPlanId=higgs_shop_basic_data_plan --versionNumber=${{ inputs.data_plan_version }} --outFile=dataplans/${{ inputs.data_plan_id }}_${{ inputs.data_plan_version }}.json --workspaceId=$WORKSPACE_ID --clientId=$CLIENT_ID --clientSecret=$CLIENT_SECRET
 
       - name: Archive Data Plan Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: higgs-shop-dataplan
           path: ${{ inputs.app_relative_path }}/dataplans/
