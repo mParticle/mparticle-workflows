@@ -17,7 +17,7 @@ jobs:
     name: "Clean up old branches"
     steps:
       - name: "Delete stale branches"
-        uses: phpdocker-io/github-actions-delete-abandoned-branches@v1
+        uses: phpdocker-io/github-actions-delete-abandoned-branches@v2
         id: delete
         with:
           github_token: ${{ secrets.MP_DAILY_CRON_BOT }}
