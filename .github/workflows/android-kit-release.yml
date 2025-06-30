@@ -28,7 +28,7 @@ jobs:
       GIT_COMMITTER_EMAIL: developers@mparticle.com
     steps:
       - name: "Checkout development branch"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.MP_INTEGRATIONS_SEMANTIC_RELEASE_BOT }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout main branch"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           repository: ${{ github.repository }}
