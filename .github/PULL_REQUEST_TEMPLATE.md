@@ -1,9 +1,20 @@
-## Summary
-- {provide a thorough description of the changes}
+## Background
+- {Explain the context of the change, including the problem it addresses or relevant background information}
 
-## Testing Plan
-- {explain how this has been tested, and what additional testing should be done}
+## What Has Changed
+- {Describe the changes introduced by this PR}
 
-## Reference Issue
-- Closes https://go.mparticle.com/work/REPLACEME
+## Screenshots/Video
+- {Include any screenshots or video demonstrating the new feature or fix, if applicable}
 
+## Checklist
+- [ ] I have performed a self-review of my own code.
+- [ ] I have made corresponding changes to the documentation.
+- [ ] I have added tests that prove my fix is effective or that my feature works.
+- [ ] I have test this locally?
+
+## Additional Notes
+- {Any additional information or context relevant to this PR}
+
+## Reference Issue (For employees only. Ignore if you are an outside contributor)
+- Closes https://go/j/[ticket-number]  
