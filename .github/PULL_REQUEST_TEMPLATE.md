@@ -11,7 +11,7 @@
 - [ ] I have performed a self-review of my own code.
 - [ ] I have made corresponding changes to the documentation.
 - [ ] I have added tests that prove my fix is effective or that my feature works.
-- [ ] I have test this locally?
+- [ ] I have tested this locally.
 
 ## Additional Notes
 - {Any additional information or context relevant to this PR}
