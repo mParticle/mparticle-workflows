@@ -27,12 +27,12 @@ jobs:
       GIT_COMMITTER_NAME: mparticle-automation
       GIT_COMMITTER_EMAIL: developers@mparticle.com
     steps:
-      - name: "Checkout development branch"
+      - name: "Checkout main branch"
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MP_INTEGRATIONS_SEMANTIC_RELEASE_BOT }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: development
+          ref: main
       - name: "Import GPG Key"
         uses: crazy-max/ghaction-import-gpg@v5
         with:
@@ -74,7 +74,6 @@ jobs:
         if: ${{ inputs.dryRun == 'false' }}
         run: |
           git push origin HEAD:main
-          git push origin HEAD:development
       - name: "Delete release branch"
         if: ${{ inputs.dryRun == 'false' }}
         run: |
