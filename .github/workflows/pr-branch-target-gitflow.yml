@@ -3,7 +3,7 @@ on:
     workflow_call:
 jobs:
     pr-branch-confirmation:
-        name: "Confirm that target branch for PR is development or build/"
+        name: "Confirm that target branch for PR is main or build/"
         runs-on: ubuntu-latest
         steps:
             - name: "echo PR target branch"
@@ -12,7 +12,7 @@ jobs:
             - name: "Set PR target branch validity"
               id: is-valid
               if: >
-                  startsWith(github.event.pull_request.base.ref, 'development')||
+                  startsWith(github.event.pull_request.base.ref, 'main')||
                   startsWith(github.event.pull_request.base.ref, 'chore/dependabot') ||
                   startsWith(github.event.pull_request.base.ref, 'build/')
               run: |
