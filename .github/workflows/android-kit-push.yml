@@ -28,7 +28,7 @@ jobs:
           java-version: "17"
           cache: "gradle"
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: Clean and Run Unit Tests
         continue-on-error: true
         run: ./gradlew clean assemble test
@@ -63,7 +63,7 @@ jobs:
           java-version: "17"
           cache: "gradle"
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: "Build Core"
         working-directory: core
         run: ./gradlew publishLocal -PisRelease=true
@@ -106,7 +106,7 @@ jobs:
           java-version: "17"
           cache: "gradle"
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: "Run Lint"
         continue-on-error: true
         run: ./gradlew lint
@@ -141,7 +141,7 @@ jobs:
           java-version: "17"
           cache: "gradle"
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: "Build Core"
         working-directory: core
         run: ./gradlew publishLocal -PisRelease=true
@@ -184,7 +184,7 @@ jobs:
           java-version: "17"
           cache: "gradle"
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: "Run Kotlin Lint"
         continue-on-error: true
         run: ./gradlew ktlintCheck
@@ -219,7 +219,7 @@ jobs:
           java-version: "17"
           cache: "gradle"
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: "Build Core"
         working-directory: core
         run: ./gradlew publishLocal -PisRelease=true
