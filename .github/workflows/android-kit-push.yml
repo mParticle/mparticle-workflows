@@ -31,7 +31,6 @@ jobs:
         continue-on-error: true
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.5.1
           arguments: clean assemble test
       - name: "Archive Test Results"
         uses: actions/upload-artifact@v4
@@ -82,7 +81,6 @@ jobs:
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.5.1
           build-root-directory: kit
           arguments: clean assemble test -Pversion=${{ steps.core-version.outputs.coreVersion }}
       - name: "Archive Test Results"
@@ -111,7 +109,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
         continue-on-error: true
         with:
-          gradle-version: 7.5.1
           arguments: lint
       - name: "Archive Lint Results"
         uses: actions/upload-artifact@v4
@@ -162,7 +159,6 @@ jobs:
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.5.1
           build-root-directory: kit
           arguments: lint -Pversion=${{ steps.core-version.outputs.coreVersion }}
       - name: "Archive Lint Results"
@@ -191,7 +187,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
         continue-on-error: true
         with:
-          gradle-version: 7.5.1
           arguments: ktlintCheck
       - name: "Archive Lint Results"
         uses: actions/upload-artifact@v4
@@ -242,7 +237,6 @@ jobs:
       - name: "Clean and Run Unit Tests"
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.5.1
           build-root-directory: kit
           arguments: ktlintCheck -Pversion=${{ steps.core-version.outputs.coreVersion }}
       - name: "Archive Lint Results"
