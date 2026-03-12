@@ -35,9 +35,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: '24.x'
           
       - name: Install mP CLI
         run: npm install -g @mparticle/cli

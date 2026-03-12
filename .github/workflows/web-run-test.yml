@@ -29,9 +29,9 @@ jobs:
                   ref: ${{ inputs.branch_name }}
 
             - name: NPM install
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 16.x
+                  node-version: 24.x
 
             - name: Run NPM CI
               run: npm ci
@@ -40,7 +40,7 @@ jobs:
               run: ${{ inputs.build_command }}
 
             - name: Install Firefox Latest
-              uses: browser-actions/setup-firefox@latest
+              uses: browser-actions/setup-firefox@fcf821c621167805dd63a29662bd7cb5676c81a8 # v1.7.1
 
             - name: Log Firefox Version
               run: firefox --version
