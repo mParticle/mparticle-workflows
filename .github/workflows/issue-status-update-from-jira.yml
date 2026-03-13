@@ -37,10 +37,10 @@ jobs:
       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
     steps:
       - name: Login
-        uses: atlassian/gajira-login@master
+        uses: atlassian/gajira-login@ca13f8850ea309cf44a6e4e0c49d9aa48ac3ca4c # v3
 
       - name: Get Jira Ticket Links
-        uses: fjogeleit/http-request-action@v1.11.0
+        uses: fjogeleit/http-request-action@551353b829c3646756b2ec2b3694f819d7957495 # v2.0.0
         id: get_links
         with:
           url: ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ github.event.inputs.jira_ticket }}/remotelink
@@ -53,10 +53,11 @@ jobs:
       
       - name: Parse URL from List
         id: parse_url
-        run: | 
-          echo ::set-output name=issue_url::`echo '${{ steps.get_links.outputs.response }}' | jq '.[]|select(.object.title | startswith("Github Issue Link:")).object.url'`
+        run: |
+          issue_url=$(echo '${{ steps.get_links.outputs.response }}' | jq -r '.[] | select(.object.title | startswith("Github Issue Link:")).object.url')
+          echo "issue_url=${issue_url}" >> "$GITHUB_OUTPUT"
 
-      - uses: mad9000/actions-find-and-replace-string@2
+      - uses: mad9000/actions-find-and-replace-string@bf97a127285f67d542d3f06145424c64803ae81a # v2
         id: sub
         with:
           source: '${{ steps.parse_url.outputs.issue_url }}'

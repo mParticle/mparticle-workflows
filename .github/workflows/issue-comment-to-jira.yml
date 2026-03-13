@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Login"
-        uses: atlassian/gajira-login@master
+        uses: atlassian/gajira-login@ca13f8850ea309cf44a6e4e0c49d9aa48ac3ca4c # v3
 
       - name: "Get Issue"
         id: get
@@ -32,7 +32,7 @@ jobs:
         
       - name: Find in commit messages
         id: find
-        uses: atlassian/gajira-find-issue-key@master
+        uses: atlassian/gajira-find-issue-key@7d9cbdfce900a0fcf608050ce728620a928be8b6 # v3
         with:
           string: ${{ steps.get.outputs.issue-labels }}  
           
@@ -42,7 +42,7 @@ jobs:
           echo "${{ github.event.issue }}"  
         
       - name: "Create comment"
-        uses: atlassian/gajira-comment@master
+        uses: atlassian/gajira-comment@76589d6b6d0b94b1ca6b01171c01a6affb5d6701 # v3
         with:
           issue: ${{ steps.find.outputs.issue }}
           comment: ${{ github.event.comment.body }}
