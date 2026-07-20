@@ -9,46 +9,32 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         runs-on: ubuntu-latest
         steps:
-            - name: "Set PR title validity"
-              id: is-semantic
-              if: >
-                  startsWith(github.event.pull_request.title, 'feat:')||
-                  startsWith(github.event.pull_request.title, 'fix:') ||
-                  startsWith(github.event.pull_request.title, 'perf:') ||
-                  startsWith(github.event.pull_request.title, 'docs:') ||
-                  startsWith(github.event.pull_request.title, 'test:') ||
-                  startsWith(github.event.pull_request.title, 'refactor:') ||
-                  startsWith(github.event.pull_request.title, 'style:') ||
-                  startsWith(github.event.pull_request.title, 'build:') ||
-                  startsWith(github.event.pull_request.title, 'ci:') ||
-                  startsWith(github.event.pull_request.title, 'chore:') ||
-                  startsWith(github.event.pull_request.title, 'revert:')
+            - name: "Validate PR title"
+              # The title is passed through the environment (never interpolated
+              # directly into the script) to avoid shell injection.
+              env:
+                  PR_TITLE: ${{ github.event.pull_request.title }}
               run: |
-                  OUTPUT=true
-                  echo "isSemantic=$OUTPUT" >> $GITHUB_OUTPUT
-            - name: "echo isSemantic"
-              run: |
-                  echo ${{ steps.is-semantic.outputs.isSemantic }}
-            - name: "PR title is valid"
-              if: ${{steps.is-semantic.outputs.isSemantic == 'true'}}
-              run: |
-                  echo 'Pull request title is valid.'
-                  echo ${{ steps.is-semantic.outputs.isSemantic }}
-            - name: "PR title is invalid"
-              if: ${{ steps.is-semantic.outputs.isSemantic != 'true'}}
-              run: |
-                  echo ${{ steps.is-semantic.outputs.isSemantic }}
-                  echo 'Pull request title, ${{github.event.pull_request.title}} is not valid.'
-                  echo 'title must start with one of:'
-                  echo '    build:,'
-                  echo '    chore:,'
-                  echo '    ci:,'
-                  echo '    docs:,'
-                  echo '    feat:,'
-                  echo '    fix:,'
-                  echo '    perf:,'
-                  echo '    refactor:,'
-                  echo '    revert:,'
-                  echo '    style:,'
-                  echo '    test:'
-                  exit 1
+                  # A valid title starts with a conventional-commit type,
+                  # optionally followed by a scope in parentheses, then a colon:
+                  #     type:            e.g. "chore: bump dependency"
+                  #     type(scope):     e.g. "chore(rokt): bump dependency"
+                  if echo "$PR_TITLE" | grep -qE '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?:'; then
+                      echo "Pull request title is valid: $PR_TITLE"
+                  else
+                      echo "Pull request title, \"$PR_TITLE\", is not valid."
+                      echo 'Title must start with one of the following types, optionally'
+                      echo 'followed by a scope in parentheses (e.g. "feat(scope):"):'
+                      echo '    build:,'
+                      echo '    chore:,'
+                      echo '    ci:,'
+                      echo '    docs:,'
+                      echo '    feat:,'
+                      echo '    fix:,'
+                      echo '    perf:,'
+                      echo '    refactor:,'
+                      echo '    revert:,'
+                      echo '    style:,'
+                      echo '    test:'
+                      exit 1
+                  fi
