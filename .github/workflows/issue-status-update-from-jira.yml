@@ -40,7 +40,7 @@ jobs:
         uses: atlassian/gajira-login@ca13f8850ea309cf44a6e4e0c49d9aa48ac3ca4c # v3
 
       - name: Get Jira Ticket Links
-        uses: fjogeleit/http-request-action@551353b829c3646756b2ec2b3694f819d7957495 # v2.0.0
+        uses: fjogeleit/http-request-action@f98bb26551cd1af7d3eb2674578a80754ece88db # v2.0.1
         id: get_links
         with:
           url: ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ github.event.inputs.jira_ticket }}/remotelink
