@@ -36,7 +36,7 @@ jobs:
       image: returntocorp/semgrep
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Run Semgrep"
         run: "semgrep --config=auto ."
