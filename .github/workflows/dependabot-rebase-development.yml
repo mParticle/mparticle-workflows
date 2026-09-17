@@ -1,6 +1,14 @@
 name: "Dependabot Branch Rebase"
 
-on: [ workflow_call ]
+on:
+  workflow_call:
+    secrets:
+      MP_SEMANTIC_RELEASE_BOT:
+        required: true
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
 
 jobs:
   rebase-branch:
