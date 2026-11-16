@@ -1,6 +1,10 @@
 name: "Semantic Release Branch Check"
 on:
   workflow_call:
+
+permissions:
+  contents: read
+
 jobs:
   # SDK release must be done from the master or main branch
   confirm-master-main-branch:
@@ -8,7 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Branch Check
         run: |

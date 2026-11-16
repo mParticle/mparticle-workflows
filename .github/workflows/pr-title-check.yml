@@ -3,6 +3,9 @@ on:
     workflow_call:
     pull_request:
         types: [opened, reopened, synchronize, edited]
+permissions:
+    contents: read
+
 jobs:
     pr-title-check:
         name: "Check PR for semantic title"

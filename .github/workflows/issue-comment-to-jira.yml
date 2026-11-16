@@ -1,10 +1,15 @@
-
 name: "Create Jira Comment"
 
 on:
   workflow_call:
-  issue_comment:
+  # Direct issue_comment trigger retained for repositories that run this workflow directly;
+  # checkout uses persist-credentials: false and comment text is passed via action inputs.
+  issue_comment: # zizmor: ignore[dangerous-triggers]
     types: ["created"]
+
+permissions:
+  contents: read
+  issues: read
 
 jobs:
   issue-commented:
@@ -16,31 +21,39 @@ jobs:
       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
     steps:
       - name: "Checkout Branch"
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: "Login"
         uses: atlassian/gajira-login@ca13f8850ea309cf44a6e4e0c49d9aa48ac3ca4c # v3
 
       - name: "Get Issue"
         id: get
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'get-issue'
+        env:
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+        run: |
+          echo "issue-labels=$ISSUE_LABELS" >> "$GITHUB_OUTPUT"
 
       - name: "Log created issue"
-        run: echo "${{ steps.get.outputs.issue-labels }}"   
-        
+        env:
+          ISSUE_LABELS: ${{ steps.get.outputs.issue-labels }}
+        run: echo "$ISSUE_LABELS"
+
       - name: Find in commit messages
         id: find
         uses: atlassian/gajira-find-issue-key@7d9cbdfce900a0fcf608050ce728620a928be8b6 # v3
         with:
-          string: ${{ steps.get.outputs.issue-labels }}  
-          
+          string: ${{ steps.get.outputs.issue-labels }}
+
       - name: "Log found issue"
+        env:
+          FOUND_ISSUE: ${{ steps.find.outputs.issue }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          echo "${{ steps.find.outputs.issue }}"  
-          echo "${{ github.event.issue }}"  
-        
+          echo "$FOUND_ISSUE"
+          echo "$ISSUE_NUMBER"
+
       - name: "Create comment"
         uses: atlassian/gajira-comment@76589d6b6d0b94b1ca6b01171c01a6affb5d6701 # v3
         with:

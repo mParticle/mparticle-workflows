@@ -16,9 +16,13 @@ on:
         required: true
   repository_dispatch:
 
+permissions: {}
+
 jobs:
   add-issue-comment:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     env:
       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
@@ -37,28 +41,39 @@ jobs:
           password: ${{ env.JIRA_API_TOKEN }}
           customHeaders: '{"Content-Type": "application/json"}'
 
-      - run: echo ${{ steps.get_links.outputs.response }}
-      
+      - env:
+          LINKS_RESPONSE: ${{ steps.get_links.outputs.response }}
+        run: echo "$LINKS_RESPONSE"
+
       - name: Parse URL from List
         id: parse_url
+        env:
+          LINKS_RESPONSE: ${{ steps.get_links.outputs.response }}
         run: |
-          issue_url=$(echo '${{ steps.get_links.outputs.response }}' | jq -r '.[] | select(.object.title | startswith("Github Issue Link:")).object.url')
+          issue_url=$(printf '%s' "$LINKS_RESPONSE" | jq -r '.[] | select(.object.title | startswith("Github Issue Link:")).object.url')
           echo "issue_url=$issue_url" >> "$GITHUB_OUTPUT"
-      
-      - uses: mad9000/actions-find-and-replace-string@bf97a127285f67d542d3f06145424c64803ae81a # v2
+
+      - uses: mad9000/actions-find-and-replace-string@bf97a127285f67d542d3f06145424c64803ae81a # 2
         id: sub
         with:
           source: '${{ steps.parse_url.outputs.issue_url }}'
           find: github.com
           replace: api.github.com/repos
 
-      - run: echo  ${{ steps.sub.outputs.value }}
-      
+      - env:
+          API_ISSUE_URL: ${{ steps.sub.outputs.value }}
+        run: echo "$API_ISSUE_URL"
+
       - name: Add Comment
+        env:
+          BOT_TOKEN: ${{ secrets.MP_SEMANTIC_RELEASE_BOT }}
+          API_ISSUE_URL: ${{ steps.sub.outputs.value }}
+          COMMENT_TEXT: ${{ github.event.inputs.comment }}
         run: |
+          payload=$(jq -n --arg body "$COMMENT_TEXT" '{"body": $body}')
           curl \
           -X POST \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{secrets.MP_SEMANTIC_RELEASE_BOT}}" \
-          ${{ steps.sub.outputs.value }}/comments \
-          -d '{"body":"${{  github.event.inputs.comment }}"}'
+          -H "Authorization: Bearer $BOT_TOKEN" \
+          "${API_ISSUE_URL}/comments" \
+          -d "$payload"

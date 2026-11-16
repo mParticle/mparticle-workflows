@@ -2,9 +2,13 @@ name: "Dependabot Branch Rebase"
 
 on: [ workflow_call ]
 
+permissions: {}
+
 jobs:
   rebase-branch:
     name: "Rebase main onto chore/dependabot Branch"
+    permissions:
+      contents: write
     env:
       GITHUB_TOKEN: ${{ secrets.MP_SEMANTIC_RELEASE_BOT }}
       GIT_AUTHOR_NAME: mparticle-automation
@@ -13,8 +17,8 @@ jobs:
       GIT_COMMITTER_EMAIL: developers@mparticle.com
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout main branch"
-        uses: actions/checkout@v4
+      - name: "Checkout main branch" # zizmor: ignore[artipacked]
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
       - name: "Rebase chore/dependabot branch"
