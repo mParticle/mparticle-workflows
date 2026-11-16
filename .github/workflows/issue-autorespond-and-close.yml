@@ -14,21 +14,31 @@ on:
         required: true
         type: string
 
+permissions: {}
+
 jobs:
   respond_and_close:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO_NAME: ${{ inputs.repository }}
+      ISSUE_NUMBER: ${{ inputs.issue_number }}
+      USER_LOGIN: ${{ github.event.issue.user.login }}
     steps:
       - name: Add a comment
         run: |
+          body=$(jq -n --arg u "$USER_LOGIN" '{"body": ("Thank you for opening this issue, @" + $u + "!  In order to get you the fastest response to your issue, you should instead open a ticket at http://support.mparticle.com. This issue will now be automatically closed.")}')
           curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ inputs.repository }}/issues/${{ inputs.issue_number }}/comments \
-            -d '{"body": "Thank you for opening this issue, @${{ github.event.issue.user.login }}!  In order to get you the fastest response to your issue, you should instead open a ticket at http://support.mparticle.com. This issue will now be automatically closed."}'
+            "https://api.github.com/repos/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments" \
+            -d "$body"
       - name: Close the issue
         run: |
           curl -X PATCH \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ inputs.repository }}/issues/${{ inputs.issue_number }} \
+            "https://api.github.com/repos/${REPO_NAME}/issues/${ISSUE_NUMBER}" \
             -d '{"state": "closed"}'

@@ -3,13 +3,19 @@ name: "Dependabot Automerge"
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   automerge-dependabot:
     name: "Automerge Dependabot PR"
     if: >
       (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'workflow_run') &&
       github.event.workflow_run.conclusion == 'success' &&
-      github.actor == 'dependabot[bot]'
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.MP_SEMANTIC_RELEASE_BOT }}
       GIT_AUTHOR_NAME: mparticle-automation
@@ -19,16 +25,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Print Event'
+        env:
+          WORKFLOW_RUN_EVENT: ${{ github.event.workflow_run.event }}
         run: |
-            echo ${{ github.event.workflow_run.event }}
+          echo "$WORKFLOW_RUN_EVENT"
       - name: 'Download artifact'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKSPACE: ${{ github.workspace }}
         with:
           script: |
             var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
-               run_id: ${{ github.event.workflow_run.id }},
+               run_id: Number(process.env.WORKFLOW_RUN_ID),
             });
             var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "pr"
@@ -40,10 +51,10 @@ jobs:
                archive_format: 'zip',
             });
             var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
+            fs.writeFileSync(`${process.env.WORKSPACE}/pr.zip`, Buffer.from(download.data));
       - run: unzip pr.zip
       - name: 'Automerge PR'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

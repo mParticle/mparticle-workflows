@@ -1,4 +1,3 @@
-
 name: "Android Kit Release SDK"
 
 on:
@@ -10,16 +9,21 @@ on:
         default: "false"
         type: string
 
+permissions: {}
+
 jobs:
   # SDK release is done from public main branch.
   confirm-public-repo-main-branch:
     name: "Confirm release is run from public/main branch"
-    uses: mParticle/mparticle-workflows/.github/workflows/sdk-release-repo-branch-check.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/sdk-release-repo-branch-check.yml # zizmor: ignore[self-repository]
 
   create-release-branch:
     name: "Create Release Branch"
     runs-on: ubuntu-latest
     needs: confirm-public-repo-main-branch
+    permissions: {}
     env:
       GITHUB_TOKEN: ${{ secrets.MP_INTEGRATIONS_SEMANTIC_RELEASE_BOT }}
       GIT_AUTHOR_NAME: mparticle-automation
@@ -27,8 +31,8 @@ jobs:
       GIT_COMMITTER_NAME: mparticle-automation
       GIT_COMMITTER_EMAIL: developers@mparticle.com
     steps:
-      - name: "Checkout main branch"
-        uses: actions/checkout@v4
+      - name: "Checkout main branch" # zizmor: ignore[artipacked]
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ secrets.MP_INTEGRATIONS_SEMANTIC_RELEASE_BOT }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -48,19 +52,21 @@ jobs:
   regression-check:
     needs: create-release-branch
     name: "Run regression"
-    uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/android-kit-push.yml # zizmor: ignore[self-repository]
     with:
       dryRun: ${{ inputs.dryRun }}
       branch_name: release/${{ github.run_number }}
-    secrets: inherit
 
   sync-repository:
     name: "Sync Repository"
     needs: regression-check
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
-      - name: "Checkout main branch"
-        uses: actions/checkout@v4
+      - name: "Checkout main branch" # zizmor: ignore[artipacked]
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           repository: ${{ github.repository }}

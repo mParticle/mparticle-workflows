@@ -6,27 +6,34 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   run-semgrep:
     name: "Run Semgrep to find vulnerabilities and security antipatterns"
     runs-on: ubuntu-latest
     container:
-      image: returntocorp/semgrep-action
+      # Shared Semgrep action image maintained upstream; pinned tag not fixed across callers.
+      image: returntocorp/semgrep-action # zizmor: ignore[unpinned-images]
     if: |
       github.actor != 'dependabot[bot]'
     steps:
       - name: "Checkout this branch"
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: "Checkout base branch"
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           ref: ${{ github.event.inputs.base_branch }}
 
       - name: "Determine which Semgrep config(s) to use"
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
         run: |
-          REPO_NAME=${{ github.event.repository.name }}
-
           if [[ $REPO_NAME =~ "android" ]]; then
               SEMGREP_RULES="p/java p/kotlin p/javascript r/bash r/yaml"
           elif [[ $REPO_NAME =~ "apple" ]]; then
@@ -38,7 +45,7 @@ jobs:
           fi
 
           echo "SEMGREP_RULES=$SEMGREP_RULES" >> $GITHUB_ENV
-          echo "Setting SEMGREP_RULES to \'$SEMGREP_RULES\'"
+          echo "Setting SEMGREP_RULES to '$SEMGREP_RULES'"
 
       - name: "Run Semgrep"
         run: "semgrep ci"
@@ -54,9 +61,11 @@ jobs:
       ( contains(github.event.repository.name, 'android') || contains(github.event.repository.name, 'apple'))
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: "Run mobsfscan"
-        uses: MobSF/mobsfscan@main
+        uses: MobSF/mobsfscan@18cce72c077cbac1925439c3158363fd3bb361aa # 1.1.0
         with:
           args: '. --sonarqube'

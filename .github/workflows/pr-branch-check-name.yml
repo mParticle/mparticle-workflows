@@ -3,6 +3,10 @@ on:
     workflow_call:
     pull_request:
         types: [opened, reopened, synchronize, edited]
+
+permissions:
+    contents: read
+
 jobs:
     pr-branch-name-check:
         name: "Check PR for semantic branch name"
@@ -28,18 +32,25 @@ jobs:
                   OUTPUT=true
                   echo "isSemantic=$OUTPUT" >> $GITHUB_OUTPUT
             - name: "echo isSemantic"
+              env:
+                  IS_SEMANTIC: ${{ steps.is-semantic.outputs.isSemantic }}
               run: |
-                  echo ${{ steps.is-semantic.outputs.isSemantic }}
+                  echo "$IS_SEMANTIC"
             - name: "Branch name is valid"
               if: ${{steps.is-semantic.outputs.isSemantic == 'true'}}
+              env:
+                  IS_SEMANTIC: ${{ steps.is-semantic.outputs.isSemantic }}
               run: |
                   echo 'Pull request branch name is valid.'
-                  echo ${{ steps.is-semantic.outputs.isSemantic }}
+                  echo "$IS_SEMANTIC"
             - name: "Branch name is invalid"
               if: ${{ steps.is-semantic.outputs.isSemantic != 'true'}}
+              env:
+                  IS_SEMANTIC: ${{ steps.is-semantic.outputs.isSemantic }}
+                  PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
               run: |
-                  echo ${{ steps.is-semantic.outputs.isSemantic }}
-                  echo 'Pull request branch name, ${{github.event.pull_request.head.ref}} is not valid.'
+                  echo "$IS_SEMANTIC"
+                  echo "Pull request branch name, $PR_HEAD_REF is not valid."
                   echo 'branch name must start with one of:'
                   echo '    build/,'
                   echo '    chore/,'

@@ -1,14 +1,20 @@
 name: "Target Branch PR Check"
 on:
     workflow_call:
+
+permissions:
+    contents: read
+
 jobs:
     pr-branch-confirmation:
         name: "Confirm that target branch for PR is main or build/"
         runs-on: ubuntu-latest
         steps:
             - name: "echo PR target branch"
+              env:
+                  PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
               run: |
-                  echo ${{ github.event.pull_request.base.ref }}
+                  echo "$PR_BASE_REF"
             - name: "Set PR target branch validity"
               id: is-valid
               if: >
@@ -19,16 +25,22 @@ jobs:
                   OUTPUT=true
                   echo "isValid=$OUTPUT" >> $GITHUB_OUTPUT
             - name: "echo isValid"
+              env:
+                  IS_VALID: ${{ steps.is-valid.outputs.isValid }}
               run: |
-                  echo ${{ steps.is-valid.outputs.isValid }}
+                  echo "$IS_VALID"
             - name: "PR target branch is valid"
               if: ${{steps.is-valid.outputs.isValid == 'true'}}
+              env:
+                  IS_VALID: ${{ steps.is-valid.outputs.isValid }}
               run: |
                   echo 'Pull request target branch is valid.'
-                  echo ${{ steps.is-valid.outputs.isValid }}
+                  echo "$IS_VALID"
             - name: "PR target branch is invalid"
               if: ${{ steps.is-valid.outputs.isValid != 'true'}}
+              env:
+                  IS_VALID: ${{ steps.is-valid.outputs.isValid }}
               run: |
-                  echo ${{ steps.is-valid.outputs.isValid }}
+                  echo "$IS_VALID"
                   echo 'Pull request target branch is not valid.'
                   exit 1

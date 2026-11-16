@@ -5,19 +5,22 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
-  # Allow to be called from a workflow child  
+  # Allow to be called from a workflow child
   workflow_call:
 
   # Allow workflow to be manually run from the GitHub UI
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   cleanup_old_branches:
     runs-on: ubuntu-latest
     name: "Clean up old branches"
+    permissions: {}
     steps:
       - name: "Delete stale branches"
-        uses: phpdocker-io/github-actions-delete-abandoned-branches@v2
+        uses: phpdocker-io/github-actions-delete-abandoned-branches@e04764c2f0f714dedb80c42d5174e756568a0452 # v2.0.3
         id: delete
         with:
           github_token: ${{ secrets.MP_DAILY_CRON_BOT }}
@@ -27,16 +30,24 @@ jobs:
           dry_run: no
 
       - name: Get output
-        run: "echo 'Deleted branches: ${{ steps.delete.outputs.deleted_branches }}'"
+        env:
+          DELETED_BRANCHES: ${{ steps.delete.outputs.deleted_branches }}
+        run: |
+          echo "Deleted branches: $DELETED_BRANCHES"
 
   run-semgrep-full:
     name: "Run Semgrep over entire repo"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     container:
-      image: returntocorp/semgrep
+      # Shared Semgrep container image maintained upstream; pinned tag not fixed across callers.
+      image: returntocorp/semgrep # zizmor: ignore[unpinned-images]
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: "Run Semgrep"
         run: "semgrep --config=auto ."
@@ -44,9 +55,9 @@ jobs:
   regression-check:
     name: "Run regression"
     if: contains(github.repository, 'android')
-    uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/android-kit-push.yml # zizmor: ignore[self-repository]
     with:
       dryRun: "true"
       branch_name: "development"
-    secrets: inherit
-
